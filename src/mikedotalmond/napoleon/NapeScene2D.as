@@ -1,0 +1,133 @@
+/*
+Copyright (c) 2012 Mike Almond - @mikedotalmond - https://github.com/mikedotalmond
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+package mikedotalmond.napoleon {
+	
+	import de.nulldesign.nd2d.display.Node2D;
+	import de.nulldesign.nd2d.display.Scene2D;
+	
+	import flash.geom.Rectangle;
+	import flash.events.Event;
+	
+	import mikedotalmond.input.IGameController;
+	
+	import nape.space.Space;
+	
+	 /**
+	  * @author Mike Almond - https://github.com/mikedotalmond
+	  * 
+	 * Adds Nape physics Space to the Scene2D, so we can deal with INapeNode children
+	 * */
+	public class NapeScene2D extends Scene2D {
+		
+		private var _gameController						:IGameController;
+		public function get gameController()			:IGameController { return _gameController; }
+		public function set gameController(value	:IGameController):void {
+			if (_gameController) _gameController.update.remove(onControllerUpdate);
+			_gameController = value;
+			_gameController.update.add(onControllerUpdate);
+		}
+		
+		private var _bounds			:Rectangle = new Rectangle();
+		public function get bounds():Rectangle { return _bounds; }
+		
+		public var space					:Space  = new Space();
+		public var velocityIterations	:uint 		= 10;
+		public var positionIterations	:uint 		= 10;
+		
+		/**
+		 *  Construct a new NapeScene2D, optionally proviiding a bounding rectangle for the nodeLeavingBounds
+		 */
+		public function NapeScene2D(bounds:Rectangle = null) {
+			super();
+			_bounds ||= bounds;
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage, false, 0, true);
+		}
+		
+		protected function onAddedToStage(e:Event):void {
+			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			resize(stage.stageWidth, stage.stageHeight);
+			backgroundColor = 0x131314;
+		}
+		
+		override protected function step(elapsed:Number):void {
+			
+			// step through the physics simulation...
+			space.step(1.0 / (elapsed * 1000), velocityIterations, positionIterations);
+			
+			const b		:Rectangle = _bounds;
+			
+			if (b) { // have bounds set? check for objects leaving the bounds
+				var n		:int = children.length;
+				var nd	:Node2D;
+				while (--n > -1) {
+					nd = children[n];
+					if (nd.visible && (nd.x < b.left || nd.x > b.right || nd.y < b.top || nd.y > b.bottom)) nodeLeavingBounds(nd);
+				}
+			}
+		}
+		
+		protected function nodeLeavingBounds(node:Node2D):void {
+			// override as required...
+		}
+		
+		public function resize(w:uint, h:uint):void {
+			// override as required...
+			_width  = w;
+			_height = h;
+		}
+		
+		public function onControllerUpdate():void {
+			// override
+		}
+		
+		override public function addChildAt(child:Node2D, idx:uint):Node2D {
+			if (child is INapeNode) (child as INapeNode).body.space = space;
+			children.fixed = false;
+			super.addChildAt(child, idx);
+			children.fixed = true;
+			return child;
+		}
+		
+		override public function removeChildAt(idx:uint):void {
+			if (idx < children.length) {
+				var s:INapeNode = children[idx] as INapeNode;
+				
+				children.fixed = false;
+				super.removeChildAt(idx);
+				children.fixed = true;
+				
+				if (s) s.dispose();
+			}
+		}
+		
+		override public function dispose():void {
+			_bounds = null;
+			_gameController.update.remove(onControllerUpdate);
+			_gameController.dispose();
+			_gameController = null;
+			camera.x = camera.y = 0;
+			camera.zoom = 1;
+			super.dispose();
+			if (parent) parent.removeChild(this);
+		}
+	}
+}
