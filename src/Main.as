@@ -23,6 +23,8 @@ package  {
 	
 	import com.furusystems.dconsole2.DConsole;
 	import flash.events.MouseEvent;
+	import mikedotalmond.napoleon.examples.binaryclock.BinaryClockScene;
+	import mikedotalmond.napoleon.examples.PointFieldTest;
 	
 	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DRenderMode;
@@ -60,17 +62,17 @@ package  {
 		
 		override protected function setupDConsole():void {
 			super.setupDConsole();
-			Logger.info("When not using the console, you can cycle through the test scenes using the 'n' key... and go full-screen using 'f'");
+			Logger.info("When not using the console, you can skip  through the test scenes using 'n' (next) and 'p' (previous) ... and go full-screen using 'f'");
 		}
 		
 		private function onKeyDown(e:KeyboardEvent):void {
 			if (e.target is TextField) return;
 			if (e.keyCode == KeyboardPlus.N) { // next scene...
 				e.preventDefault();
-				if (scene is TestScene2D) setActiveScene(new PolygonTestScene());
-				else if (scene is PolygonTestScene) setActiveScene(new CarScene());
-				else if (scene is CarScene) setActiveScene(new QuadListScene());
-				else setActiveScene(new TestScene2D());
+				nextScene();
+			} else if (e.keyCode == KeyboardPlus.P) {
+				e.preventDefault();
+				nextScene(-1);
 			} else if (e.keyCode == KeyboardPlus.F) {
 				if (stage) {
 					try {
@@ -84,15 +86,17 @@ package  {
 		}
 		
 		override protected function setupScenes():void {
-			sceneClassList["boxes"]	= TestScene2D;
-			sceneClassList["poly"]  		= PolygonTestScene;
-			sceneClassList["car"] 		= CarScene;
-			sceneClassList["quad"] 		= QuadListScene;
+			addScene(TestScene2D, "boxes");
+			addScene(PolygonTestScene, "poly");
+			addScene(CarScene, "car");
+			addScene(QuadListScene, "quad");
+			addScene(PointFieldTest, "gravity");
+			addScene(BinaryClockScene, "clock");
 		}
 		
 		override protected function context3DCreated(e:Event):void {
 			super.context3DCreated(e);
-			setActiveSceneByName("boxes");
+			nextScene();
 		}
 	}
 }

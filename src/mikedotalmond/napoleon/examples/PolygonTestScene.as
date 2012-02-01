@@ -125,7 +125,7 @@ package mikedotalmond.napoleon.examples {
 			var n:int = 64;
 			while (--n) {
 				testE = new NapePolygon2D(NapePolygon2D.regularPolygon(20 + Math.random()*20,5), null, 0xffaed03c);
-				testE.init(getRandomStageXY(), false, null, Material.steel()); 
+				testE.init(getRandomStagePosition(), false, null, Material.steel()); 
 				addChild(testE);
 			}
 			
@@ -133,7 +133,7 @@ package mikedotalmond.napoleon.examples {
 			n = 6;
 			while (--n) {
 				testE = new NapePolygon2D(NapePolygon2D.regularPolygon(50,6), null, 0xff6699a9);
-				testE.init(getRandomStageXY(), false, null, Material.rubber()); 
+				testE.init(getRandomStagePosition(), false, null, Material.rubber()); 
 				addChild(testE);
 			}
 			
@@ -141,7 +141,7 @@ package mikedotalmond.napoleon.examples {
 			n = 8;
 			while (--n) {
 				testG = new NapePolygon2D(NapePolygon2D.regularPolygon(48,8), null, 0xfff9969a9);
-				testG.init(getRandomStageXY(), false, null, Material.wood()); 
+				testG.init(getRandomStagePosition(), false, null, Material.wood()); 
 				addChild(testG);
 			}
 			
@@ -150,13 +150,13 @@ package mikedotalmond.napoleon.examples {
 			while (--n) {
 				// calling NapePolygon2D.circle creates creates a poly with 24 subdivisions (close enough to a circle when not too large)
 				testF = new NapePolygon2D(NapePolygon2D.circle(8 + Math.random()*32), Texture2D.textureFromBitmapData(new TextureBD().bitmapData));
-				testF.init(getRandomStageXY(), true, null, Material.glass()); // setting isCircle=true makes the Nape physics object a circle, not a polygon with many edges
+				testF.init(getRandomStagePosition(), true, null, Material.glass()); // setting isCircle=true makes the Nape physics object a circle, not a polygon with many edges
 				addChild(testF);
 			}
 			
 			// test NapePolygon2D with the polygonData 
 			var testH:NapePolygon2D = new NapePolygon2D(polygonData, null, 0xffffffff*Math.random());
-			testH.init(getRandomStageXY(), false, null, Material.glass());
+			testH.init(getRandomStagePosition(), false, null, Material.glass());
 			addChild(testH);
 			
 			// the ground object			
@@ -218,10 +218,6 @@ package mikedotalmond.napoleon.examples {
 			testE = null;
 			testF = null;
 			testG = null;
-		}
-		
-		private function getRandomStageXY():Vec2 {
-			return new Vec2(stage.stageWidth * Math.random(), stage.stageHeight * Math.random());		
 		}
 	}
 }
