@@ -67,7 +67,9 @@ package mikedotalmond.napoleon {
 		protected var inputInterval				:Number 	= 0;
 		protected var inputUpdateSignal		:Signal 		= new Signal();
 		
-		protected var sceneClassList			:Object 	= new Object();
+		protected var currentSceneIndex		:int = -1;
+		protected var sceneClassList			:Vector.<Class> = new Vector.<Class>();
+		protected var sceneClassNameList	:Vector.<String> = new Vector.<String>();
 		protected var napeScene				:NapeScene2D;
 		
 		/**
@@ -110,6 +112,67 @@ package mikedotalmond.napoleon {
 			throw new IllegalOperationError("setupScenes requires implementation");
 		}
 		
+		
+		/**
+		 * Add to the world scene-list
+		 * @param	scene
+		 * @param	name
+		 * @return	The new length of the scene list
+		 */
+		protected function addScene(scene:Class, name:String):int {
+			if (sceneClassNameList.indexOf(name) == -1) {
+				sceneClassList.push(scene);
+				sceneClassNameList.push(name);
+			} else {
+				Logger.info("Scene '" + name + "' already exists");
+			}
+			
+			return sceneClassNameList.length;
+		}
+		
+		
+		/**
+		 * Remove a scene from the scene-list, either by class, or name
+		 * (doesn't deactivate / destroy the scene if it's the current scene, just removes it from the list of available scenes)
+		 * @param	scene
+		 * @param	name
+		 * @return	The new length of the scene list
+		 */
+		protected function removeScene(clss:Class = null, name:String = null):int {
+			
+			var i:int = -1;
+			if (name != null) {
+				i = sceneClassNameList.indexOf(name) ;
+			} else if (scene != null) {
+				i = sceneClassList.indexOf(scene) ;
+			} 
+			
+			if (i != -1) {
+					sceneClassList.splice(i, 1);
+					sceneClassNameList.splice(i, 1);
+			} else {
+				Logger.info("Scene '" + name + "' does not exist");
+			}
+			
+			return sceneClassNameList.length;
+		}
+		
+		 /**
+		 * select the next scene from the list
+		  * @param	direction	-1/1
+		  */
+		protected function nextScene(direction:int=1):void {
+			if (sceneClassList.length == 0) {
+				Logger.warn("Nothing to select! Use addScene to add your scenes to the list...");
+				return;
+			}
+			currentSceneIndex += direction;
+			if (currentSceneIndex == sceneClassList.length) currentSceneIndex -= sceneClassList.length;
+			else if(currentSceneIndex < 0) currentSceneIndex += sceneClassList.length;
+			setActiveScene(new sceneClassList[currentSceneIndex]());
+		}
+		
+		
 		/**
 		 * Create some commands, print some messages...
 		 */
@@ -141,10 +204,7 @@ package mikedotalmond.napoleon {
 		 * @return A String of comma sperated names of scenes in the sceneClassList
 		 */
 		protected function getSceneList():String {
-			var s2:String = "";
-			for (var s:String in sceneClassList) s2 += s + ", ";
-			s2 = s2.substring(0, s2.length - 2);
-			return s2;
+			return sceneClassNameList.toString();
 		}
 		
 		/**
@@ -153,10 +213,10 @@ package mikedotalmond.napoleon {
 		 */
 		protected function setActiveSceneByName(scene:String):void {
 			
-			const C:Class = sceneClassList[scene];
+			const i	:int = sceneClassNameList.indexOf(scene);
 			
-			if (C) {
-				setActiveScene(new C() as Scene2D);
+			if (i != -1) {
+				setActiveScene(new sceneClassList[i]() as Scene2D);
 			} else{
 				Logger.info("scene '" + scene + "' does not exist");
 				Logger.info("Available scenes: " + getSceneList());
@@ -204,6 +264,7 @@ package mikedotalmond.napoleon {
 			
 			napeScene = scene as NapeScene2D; // will be null if not a NapeScene2D
 			if (napeScene) {
+				antialiasing = scene.preferredAntialiasing;
 				if(GameControllerClass) { // create and assign the game controller in the NapeScene2D
 					napeScene.gameController = new GameControllerClass(inputUpdateSignal);
 				}

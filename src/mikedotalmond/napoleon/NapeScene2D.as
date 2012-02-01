@@ -24,12 +24,15 @@ package mikedotalmond.napoleon {
 	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Scene2D;
 	
-	import flash.geom.Rectangle;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	
 	import mikedotalmond.input.IGameController;
 	
+	import nape.geom.Vec2;
 	import nape.space.Space;
+	
 	
 	 /**
 	  * @author Mike Almond - https://github.com/mikedotalmond
@@ -37,6 +40,20 @@ package mikedotalmond.napoleon {
 	 * Adds Nape physics Space to the Scene2D, so we can deal with INapeNode children
 	 * */
 	public class NapeScene2D extends Scene2D {
+		
+		private var _mouseWheelZoom:Boolean = false;
+		public function get mouseWheelZoom():Boolean { return _mouseWheelZoom; }
+		public function set mouseWheelZoom(value:Boolean):void {
+			_mouseWheelZoom = value;
+			if (stage) {
+				if (value) stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheelZoom, false, 0, true);
+				else stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheelZoom);
+			}
+		}
+		
+		protected function onMouseWheelZoom(e:MouseEvent):void {
+			camera.zoom += e.delta / 300;
+		}
 		
 		private var _gameController						:IGameController;
 		public function get gameController()			:IGameController { return _gameController; }
@@ -46,8 +63,9 @@ package mikedotalmond.napoleon {
 			_gameController.update.add(onControllerUpdate);
 		}
 		
-		private var _bounds			:Rectangle = new Rectangle();
+		private var _bounds			:Rectangle = null;
 		public function get bounds():Rectangle { return _bounds; }
+		
 		
 		public var space					:Space  = new Space();
 		public var velocityIterations	:uint 		= 10;
@@ -58,14 +76,14 @@ package mikedotalmond.napoleon {
 		 */
 		public function NapeScene2D(bounds:Rectangle = null) {
 			super();
-			_bounds ||= bounds;
+			_bounds = bounds || new Rectangle();
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage, false, 0, true);
 		}
 		
 		protected function onAddedToStage(e:Event):void {
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			resize(stage.stageWidth, stage.stageHeight);
-			backgroundColor = 0x131314;
+			mouseWheelZoom = _mouseWheelZoom;
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -87,6 +105,14 @@ package mikedotalmond.napoleon {
 		
 		protected function nodeLeavingBounds(node:Node2D):void {
 			// override as required...
+		}
+		
+		protected function getRandomStagePosition():Vec2 {
+			return new Vec2(stage.stageWidth * Math.random(), stage.stageHeight * Math.random());		
+		}
+		
+		protected function getRandomBoundsPosition():Vec2 {
+			return new Vec2(bounds.x + bounds.width * Math.random(), bounds.y + bounds.height * Math.random());		
 		}
 		
 		public function resize(w:uint, h:uint):void {
@@ -121,6 +147,7 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			_bounds = null;
+			mouseWheelZoom = false;
 			_gameController.update.remove(onControllerUpdate);
 			_gameController.dispose();
 			_gameController = null;
