@@ -67,6 +67,7 @@ package  {
 		
 		private function onKeyDown(e:KeyboardEvent):void {
 			if (e.target is TextField) return;
+			
 			if (e.keyCode == KeyboardPlus.N) { // next scene...
 				e.preventDefault();
 				nextScene();
@@ -79,24 +80,24 @@ package  {
 						stage.displayState = StageDisplayState.FULL_SCREEN;
 						DConsole.hide();
 					} catch (err:Error) {
-						trace(err); //allowFullscreen not set?
+						Logger.error(err); //allowFullscreen not set?
 					}
 				}
 			}
 		}
 		
 		override protected function setupScenes():void {
+			addScene(BinaryClockScene, "clock");
 			addScene(TestScene2D, "boxes");
 			addScene(PolygonTestScene, "poly");
 			addScene(CarScene, "car");
-			addScene(QuadListScene, "quad");
+			//addScene(QuadListScene, "quad");
 			addScene(PointFieldTest, "gravity");
-			addScene(BinaryClockScene, "clock");
 		}
 		
 		override protected function context3DCreated(e:Event):void {
 			super.context3DCreated(e);
-			nextScene();
+			nextScene(); //select the first scene
 		}
 	}
 }

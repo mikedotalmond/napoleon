@@ -21,16 +21,28 @@ package mikedotalmond.napoleon.examples.binaryclock {
 	
 	public final class BinaryClockScene extends NapeScene2D {
 		
-		static public const Logger	:ILogger	= Logging.getLogger(BinaryClockScene);		
+		public static const Logger						:ILogger								= Logging.getLogger(BinaryClockScene);	
+		
+		private static const HalfPi						:Number								= Math.PI / 2;
+		private static const TwoPi						:Number 								= Math.PI * 2;
+		private static const FourPi						:Number 								= Math.PI * 4;
+		private static const clockHueRange			:Vector.<uint>		 				= ClockUtil.getHueRange(ClockUtil.hsl(0xff0000), 60); // range of hues from 0xff0000 and back, over 60 steps
+		private static	const clockQuadRadii		:Vector.<Number> 				= Vector.<Number>([-248, -296, -344, -382, -414, -441]);
+		private static const clockQuadSizes		:Vector.<Vector.<Number>>	= Vector.<Vector.<Number>>([
+			Vector.<Number>([1, 1]),
+			Vector.<Number>([1 / 2, 1]),
+			Vector.<Number>([1 / 4, 1 / 1.125]),
+			Vector.<Number>([1 / 8, 1 / 1.25]),
+			Vector.<Number>([1 / 16, 1 / 1.5]),
+			Vector.<Number>([1 / 32, 1 / 2])
+		]);
+		
+		private const tempV			:Vec2 = new Vec2();
 		
 		private var quads				:Vector.<Vector.<NapeQuad2D>>;
 		private var edgeField			:PointField;
 		private var pointField			:PointField;
-		
-		private const pihalf				:Number = Math.PI / 2;
-		private const pi2				:Number = Math.PI * 2;
-		private const pi4				:Number = pi2 + pi2;
-		private var count					:Number = 0;		
+		private var count					:Number = 0;	
 		
 		public function BinaryClockScene() {
 			preferredAntialiasing = 6; // edges need a bit of AA love...
@@ -42,10 +54,38 @@ package mikedotalmond.napoleon.examples.binaryclock {
 		override protected function onAddedToStage(e:Event):void {
 			super.onAddedToStage(e);
 			mouseWheelZoom = true;
-			camera.zoom = 0.78;
+			camera.zoom = 0.78; // zoom out a little
+			
 			createBitsQuads();
+			setupFields();
 		}
 		
+		private function setupFields():void {
+			
+			pointField 	= new PointField(new Vec2(), null, NaN, 12, 20);
+			edgeField 	= new PointField(new Vec2(), null, 256, -32, 20);
+			
+			var c			:uint
+			var rand		:Number
+			var circle	:NapePolygon2D;
+			var n			:int = 512;
+			
+			while (--n) {
+				rand 		= Math.random();
+				c			= (rand >= 0.6666) ? 0xff800000 : ((rand >= 0.3333) ? 0xff008000 : 0xff000080);
+				circle 	= new NapePolygon2D(NapePolygon2D.regularPolygon((2 + Math.random() ), 8), null, c);
+				circle.init(getRandomStagePosition(), true, null, Material.sand());
+				circle.body.scaleShapes(3, 3);
+				circle.body.allowRotation = false;
+				pointField.addBody(circle.body);
+				edgeField.addBody(circle.body);
+				addChild(circle);
+			}
+		}
+		
+		/**
+		 * 
+		 */
 		private function createBitsQuads():void {
 			
 			quads 	= new Vector.<Vector.<NapeQuad2D>>(59, true);
@@ -56,104 +96,98 @@ package mikedotalmond.napoleon.examples.binaryclock {
 			
 			var nextY				:int 			= 0;
 			var  i						:int 			= -1;
-			var bit					:NapeQuad2D;
+			var j						:int 			= -1; 
+			const m				:int			= clockQuadSizes.length;
 			
 			const  w				:uint 			= _width >> 1;
 			const  h				:uint 			= _height >> 1;
 			var angle				:Number 	= 0;
-			var angleIncrement	:Number 	=pi2 / 60;
-			const bodyRotation:Number 	= -pihalf;
+			var angleIncrement	:Number 	=TwoPi / 60;
+			const bodyRotation:Number 	= -HalfPi;
 			
-			const hueRange	:Vector.<uint> = ClockUtil.getHueRange(ClockUtil.hsl(0xff0000), 60);
 			var lastColour		:uint;
 			var nextColour		:uint;
 			
 			while (++i < n) {
 				
-				quads[i] 		= new Vector.<NapeQuad2D>(6, true);
+				quads[i] 		= new Vector.<NapeQuad2D>(m, true);
 				// with last and next colours on left and right edges of the quad, we get a nice graduation, with the current colour in the middle
-				lastColour		= (0xFF << 24)	| hueRange[int((i == 0) ? n - 1 : i - 1)];
-				nextColour 	= (0xFF << 24)	| hueRange[int((i == n - 1) ? 0 : i + 1)];
-				nextY 			= -248;
+				lastColour		= (0xFF << 24)	| clockHueRange[int((i == 0) ? n - 1 : i - 1)];
+				nextColour 	= (0xFF << 24)	| clockHueRange[int((i == n - 1) ? 0 : i + 1)];
 				
-				if (i & 0x01) { //1
-					bit 			= new NapeQuad2D(size, size);
-					bit.init		(tempV,  null, BodyType.KINEMATIC);
-					bit.topLeftColor = bit.bottomLeftColor 		= lastColour;
-					bit.topRightColor = bit.bottomRightColor 	= nextColour;
-					quads[i][0] = bit;
-					addChild(bit);
+				j = -1;
+				while (++j < m) {
+					if (i & (1 << j)){ // only create bits where needed... running up 1,2,4,8,16,32
+						quads[i][j] 							= new NapeQuad2D(size * clockQuadSizes[j][0], size * clockQuadSizes[j][1]);
+						quads[i][j].topLeftColor 	 	= quads[i][j].bottomLeftColor	= lastColour;
+						quads[i][j].topRightColor 	= quads[i][j].bottomRightColor	= nextColour;
+						quads[i][j].init(tempV,  null, BodyType.KINEMATIC);
+						addChild(quads[i][j]);
+					}
 				}
-				nextY -= pad;
-				if (i & 0x02) { //2
-					bit			 = new NapeQuad2D(size / 2, size);
-					bit.init		(tempV, null, BodyType.KINEMATIC);
-					bit.topLeftColor = bit.bottomLeftColor 		=  lastColour;
-					bit.topRightColor = bit.bottomRightColor 	=  nextColour;
-					quads[i][1] = bit;
-					addChild(bit);
-				}
-				nextY -= pad;
-				if (i & 0x04) { //4
-					bit 			= new NapeQuad2D(size / 4, size / 1.125);
-					bit.init		(tempV, null, BodyType.KINEMATIC);
-					bit.topLeftColor = bit.bottomLeftColor 		=  lastColour;
-					bit.topRightColor = bit.bottomRightColor 	=  nextColour;
-					quads[i][2] = bit;
-					addChild(bit);
-				}
-				nextY -= pad/1.25;
-				if (i & 0x08) { //8
-					bit 			= new NapeQuad2D(size / 8, size / 1.25);
-					bit.init		(tempV, null, BodyType.KINEMATIC);
-					bit.topLeftColor = bit.bottomLeftColor 		=  lastColour;
-					bit.topRightColor = bit.bottomRightColor 	=  nextColour;
-					quads[i][3] = bit;
-					addChild(bit);
-				}
-				nextY -= pad/1.5;
-				if (i & 0x10) { //16
-					bit 			= new NapeQuad2D(size / 16, size / 1.5);
-					bit.init		(tempV, null, BodyType.KINEMATIC);
-					bit.topLeftColor = bit.bottomLeftColor 		=  lastColour;
-					bit.topRightColor = bit.bottomRightColor 	=  nextColour;
-					bit.body.rotation = angle + bodyRotation;
-					quads[i][4] = bit;
-					addChild(bit);
-				}
-				nextY -= pad/1.75;
-				if (i & 0x20) { //32
-					bit 			= new NapeQuad2D(size / 32, size / 2);
-					bit.init		(tempV, null, BodyType.KINEMATIC);
-					bit.topLeftColor = bit.bottomLeftColor 		=  lastColour;
-					bit.topRightColor = bit.bottomRightColor 	=  nextColour;
-					quads[i][5] = bit;
-					addChild(bit);
-				}	
 			}
+			positionBits(0);
+		}
+		
+		/**
+		 * 
+		 * @param	value		0 to 59 value (seconds) to rotate the clock face....
+		 */
+		private function positionBits(value:Number):void {
 			
-			positionBits(quads, 0);
+			const bodyRotation:Number 	= -HalfPi
+			var bits					:Vector.<NapeQuad2D>;
+			var n						:int 			= quads.length;
+			var m					:int 			= clockQuadRadii.length;
+			var i						:int			= -1;
+			var j						:int;
+			var a						:Number;
+			var angle				:Number 	= bodyRotation + TwoPi * (value / (n + 1));
+			var angleIncrement	:Number 	=TwoPi / (n + 1);
 			
-			space.gravity = new Vec2(0, 0);
-			pointField 		= new PointField(new Vec2(w, h), null, NaN, 12, 20);
-			edgeField 		= new PointField(new Vec2(w, h), null, 256, -14, 20);
-			
-			var circle:NapePolygon2D;
-			
-			n = 512;
-			while (--n) {
-				var rand	:Number = Math.random();
-				var c		:uint = (rand >= 0.6666) ? 0xff800000 : ((rand >= 0.3333) ? 0xff008000 : 0xff000080);
-				circle = new NapePolygon2D(NapePolygon2D.regularPolygon((1 + Math.random() * 2), 8), null, c);
-				circle.init(getRandomStagePosition(), true, null, Material.steel());
-				circle.body.scaleShapes(3, 3);
-				circle.body.allowRotation = false;
-				//circle.body.group = g;
-				pointField.addBody(circle.body);
-				edgeField.addBody(circle.body);
-				addChild(circle);
+			while (++i < n) {
+				a			= angle + bodyRotation;
+				j 			= -1;
+				bits 		= quads[i];
+				
+				while (++j < m) {
+					if (i & (1 << j)) {
+						bits[j].body.position.set(getBitPosition(angle, clockQuadRadii[j]));
+						bits[j].body.rotation = a;
+					}
+				}
+				
+				angle += angleIncrement;
 			}
+		}
+		
+		/**
+		 * Get a position from the centre of the visible stage, at radius, swept through angle
+		 * @param	angle
+		 * @param	radius
+		 * @return
+		 */
+		private function getBitPosition(angle:Number, radius:Number):Vec2 {
+			tempV.setxy((_width >> 1) + radius * Math.cos(angle),  (_height >> 1) + radius * Math.sin(angle));
+			return tempV;
+		}
+		
+		/**
+		 * 
+		 * @param	elapsed
+		 */
+		override protected function step(elapsed:Number):void {
 			
+			edgeField.position.set(getBitPosition(Math.cos(FourPi * (count / 45)), Math.cos(TwoPi* (count / 88)) * 256));
+			pointField.position.set(getBitPosition(TwoPi * (count / 30), 32));
+			
+			edgeField.update();
+			pointField.update();
+			
+			positionBits(count);
+			count -= 0.14;
+			
+			super.step(elapsed);
 		}
 		
 		override public function dispose():void {
@@ -163,76 +197,6 @@ package mikedotalmond.napoleon.examples.binaryclock {
 			edgeField = null;
 			quads = null;
 			super.dispose();
-		}
-		
-		override protected function step(elapsed:Number):void {
-			edgeField.position.set(getBitPosition(Math.cos(pi4 * (count / 45)), 80));
-			pointField.position.set(getBitPosition(pi2 * (count / 30), 32));
-			
-			edgeField.update();
-			pointField.update();
-			
-			positionBits(quads, count);
-			super.step(elapsed);
-			count -= 0.14;
-		}
-		
-		private function positionBits(input:Vector.<Vector.<NapeQuad2D>>, value:Number):void {
-			
-			const bodyRotation:Number 	= -pihalf
-			var bits					:Vector.<NapeQuad2D>;
-			var n						:int 			= input.length;
-			var i						:int			= -1;
-			var a						:Number 	= 0;
-			var angle				:Number 	= bodyRotation + pi2 * (value / (n + 1));
-			var angleIncrement	:Number 	=pi2 / (n + 1);
-			
-			const pad		:int = 48;
-			var nextY		:int
-			
-			while (++i < n) {
-				a			= angle + bodyRotation;
-				nextY 	= -248;
-				bits 		= input[i];
-				if (bits[0]) { //1
-					bits[0].body.position.set(getBitPosition(angle, nextY));
-					bits[0].body.rotation = a;
-				}
-				nextY -= pad;
-				if (bits[1]) { //2
-					bits[1].body.position.set(getBitPosition(angle, nextY));
-					bits[1].body.rotation = a;
-				}
-				nextY -= pad;
-				if (bits[2]) { //4
-					bits[2].body.position.set(getBitPosition(angle, nextY));
-					bits[2].body.rotation = a;
-				}
-				nextY -= pad/1.25;
-				if (bits[3]) { //8
-					bits[3].body.position.set(getBitPosition(angle, nextY));
-					bits[3].body.rotation = a;
-				}
-				nextY -= pad/1.5;
-				if (bits[4]) { //16
-					bits[4].body.position.set(getBitPosition(angle, nextY));
-					bits[4].body.rotation = a;
-				}
-				nextY -= pad/1.75;
-				if (bits[5]) { //32
-					bits[5].body.position.set(getBitPosition(angle, nextY));
-					bits[5].body.rotation = a;
-				}
-				
-				nextY -= pad;
-				angle += angleIncrement;
-			}
-		}
-		
-		private const tempV:Vec2 = new Vec2();
-		private function getBitPosition(angle:Number, radius:Number):Vec2 {
-			tempV.setxy((_width >> 1) + radius * Math.cos(angle),  (_height >> 1) + radius * Math.sin(angle));
-			return tempV; 
 		}
 	}
 }

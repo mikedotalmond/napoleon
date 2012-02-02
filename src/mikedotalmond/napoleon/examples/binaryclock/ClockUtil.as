@@ -27,6 +27,13 @@ package mikedotalmond.napoleon.examples.binaryclock {
 	 */
 	public final class ClockUtil {
 		
+		/**
+		 * Get a range of RGB values, from a given start colour
+		 * @param	start				Start colour (RGB uint)
+		 * @param	size				Number of values to calculate
+		 * @param	hueRange		Range of hues to rotate the input by, 0 to 1
+		 * @return
+		 */
 		public static function getHueRange(start:uint, size:uint, hueRange:Number=1):Vector.<uint> {
 			const out	:Vector.<uint> = new Vector.<uint>(size, true);
 			var i		:int = -1;
@@ -34,6 +41,14 @@ package mikedotalmond.napoleon.examples.binaryclock {
 			return out;
 		}
 		
+		/**
+		 * Modify an RGB uint in HSL space
+		 * @param	colour
+		 * @param	hue
+		 * @param	sat
+		 * @param	lum
+		 * @return
+		 */
 		public static function hsl(colour:uint, hue:Number = 0, sat:Number = 1.0, lum:Number = 1.0):uint {
 			
 			var r:Number = Number((colour >> 16) & 0xFF) / 0xFF;
@@ -57,7 +72,7 @@ package mikedotalmond.napoleon.examples.binaryclock {
 				// calculate Saturation
 				if (L < 0.5) S = D / (Cmax + Cmin);
 				else S = D / (2.0 - (Cmax + Cmin));
-
+				
 				// calculate Hue
 				if (r == Cmax){
 					H = (g - b) / D;
