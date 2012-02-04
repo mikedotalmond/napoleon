@@ -42,7 +42,9 @@ package mikedotalmond.napoleon.examples.binaryclock {
 		private var quads				:Vector.<Vector.<NapeQuad2D>>;
 		private var edgeField			:PointField;
 		private var pointField			:PointField;
-		private var count					:Number = 0;	
+		private var bitsPositionIndex:uint = 0;	
+		private var quadPositions	:Vector.<Vector.<Vector.<Vec2>>>;
+		private var quadRotations	:Vector.<Vector.<Vector.<Number>>>;
 		
 		public function BinaryClockScene() {
 			preferredAntialiasing = 6; // edges need a bit of AA love...
@@ -55,9 +57,10 @@ package mikedotalmond.napoleon.examples.binaryclock {
 			super.onAddedToStage(e);
 			mouseWheelZoom = true;
 			camera.zoom = 0.78; // zoom out a little
-			
+			velocityIterations = positionIterations = 1;
 			createBitsQuads();
 			setupFields();
+			cacheQuadPositions(720);
 		}
 		
 		private function setupFields():void {
@@ -73,7 +76,7 @@ package mikedotalmond.napoleon.examples.binaryclock {
 			while (--n) {
 				rand 		= Math.random();
 				c			= (rand >= 0.6666) ? 0xff800000 : ((rand >= 0.3333) ? 0xff008000 : 0xff000080);
-				circle 	= new NapePolygon2D(NapePolygon2D.regularPolygon((2 + Math.random() ), 8), null, c);
+				circle 	= new NapePolygon2D(NapePolygon2D.regularPolygon((1.5 + Math.random() ), 8), null, c);
 				circle.init(getRandomStagePosition(), true, null, Material.sand());
 				circle.body.scaleShapes(3, 3);
 				circle.body.allowRotation = false;
@@ -126,38 +129,72 @@ package mikedotalmond.napoleon.examples.binaryclock {
 					}
 				}
 			}
-			positionBits(0);
 		}
 		
-		/**
-		 * 
-		 * @param	value		0 to 59 value (seconds) to rotate the clock face....
-		 */
-		private function positionBits(value:Number):void {
+		
+		private function positionBits():void {
 			
-			const bodyRotation:Number 	= -HalfPi
+			if (bitsPositionIndex == quadPositions.length) bitsPositionIndex = 0;
+			
+			const p:Vector.<Vector.<Vec2>> 	= quadPositions[bitsPositionIndex];
+			const r:Vector.<Vector.<Number>> = quadRotations[bitsPositionIndex];
+			
 			var bits					:Vector.<NapeQuad2D>;
-			var n						:int 			= quads.length;
-			var m					:int 			= clockQuadRadii.length;
-			var i						:int			= -1;
+			var n						:int = quads.length;
+			var m					:int = clockQuadRadii.length;
+			var i						:int = -1;
 			var j						:int;
-			var a						:Number;
-			var angle				:Number 	= bodyRotation + TwoPi * (value / (n + 1));
-			var angleIncrement	:Number 	=TwoPi / (n + 1);
 			
 			while (++i < n) {
-				a			= angle + bodyRotation;
-				j 			= -1;
-				bits 		= quads[i];
-				
+				j 		= -1;
+				bits 	= quads[i];
 				while (++j < m) {
 					if (i & (1 << j)) {
-						bits[j].body.position.set(getBitPosition(angle, clockQuadRadii[j]));
-						bits[j].body.rotation = a;
+						bits[j].body.position.set(p[i][j]);
+						bits[j].body.rotation = r[i][j];
 					}
 				}
-				
-				angle += angleIncrement;
+			}
+		}
+		
+		
+		
+		private function cacheQuadPositions(steps:uint = 360):void {
+			
+			quadPositions = new Vector.<Vector.<Vector.<Vec2>>>(steps, true);
+			quadRotations = new Vector.<Vector.<Vector.<Number>>>(steps, true);
+			
+			const stepSize			:Number 	= TwoPi / steps; // rotate 360 degress over the step range
+			const bodyRotation	:Number 	= -HalfPi // offset rotation so quads point outwards
+			const n						:int 			= quads.length;
+			const m					:int 			= clockQuadRadii.length;
+			const angleIncrement	:Number 	= TwoPi / (n + 1);
+			
+			var i							:int;
+			var j							:int;
+			var k							:int;
+			var bodyAngle			:Number;
+			var angle					:Number;
+		
+			k = -1;
+			while (++k < steps) { // for each step of movement
+				quadPositions[k] 	= new Vector.<Vector.<Vec2>>(n, true);
+				quadRotations[k] 	= new Vector.<Vector.<Number>>(n, true);
+				angle 					= bodyRotation + (k * stepSize);
+				i 							= -1;
+				while (++i < n) { // for each quad
+					quadPositions[k][i] 	= new Vector.<Vec2>(m, true);
+					quadRotations[k][i] 	= new Vector.<Number>(m, true);
+					bodyAngle					= angle + bodyRotation;
+					j 								= -1;
+					while (++j < m) {
+						if (i & (1 << j)) { // for each active bit, store position and rotation
+							quadPositions[k][i][j] = getBitPosition(angle, clockQuadRadii[j]).copy(); 
+							quadRotations[k][i][j] = bodyAngle;
+						}
+					}
+					angle += angleIncrement;
+				}
 			}
 		}
 		
@@ -178,16 +215,21 @@ package mikedotalmond.napoleon.examples.binaryclock {
 		 */
 		override protected function step(elapsed:Number):void {
 			
-			edgeField.position.set(getBitPosition(Math.cos(FourPi * (count / 45)), Math.cos(TwoPi* (count / 88)) * 256));
-			pointField.position.set(getBitPosition(TwoPi * (count / 30), 32));
+			edgeField.position.set(getBitPosition(Math.cos(FourPi * (bitsPositionIndex / 450)), Math.cos(TwoPi* (bitsPositionIndex / 888)) * 256));
+			pointField.position.set(getBitPosition(TwoPi * (bitsPositionIndex / 300), 32));
 			
 			edgeField.update();
 			pointField.update();
 			
-			positionBits(count);
-			count -= 0.14;
+			positionBits();
+			bitsPositionIndex++;
 			
 			super.step(elapsed);
+		}
+		
+		override public function resize(w:uint, h:uint):void {
+			super.resize(w, h);
+			if(quads) cacheQuadPositions(720);
 		}
 		
 		override public function dispose():void {
