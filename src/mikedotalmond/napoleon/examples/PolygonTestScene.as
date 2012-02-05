@@ -28,9 +28,8 @@ package mikedotalmond.napoleon.examples {
 	
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
-	import de.nulldesign.nd2d.display.Node2D;
-	import mikedotalmond.napoleon.INapeNode;
 	
+	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
 	import de.nulldesign.nd2d.materials.Polygon2DColorMaterial;
@@ -41,6 +40,7 @@ package mikedotalmond.napoleon.examples {
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	
+	import mikedotalmond.napoleon.INapeNode;
 	import mikedotalmond.napoleon.NapePolygon2D;
 	import mikedotalmond.napoleon.NapeScene2D;
 	import mikedotalmond.napoleon.NapeSprite2D;
@@ -49,21 +49,22 @@ package mikedotalmond.napoleon.examples {
 	import nape.phys.BodyType;
 	import nape.phys.Material;
 	
+	
 	public final class PolygonTestScene extends NapeScene2D {
 		
 		[Embed(source="../../../../assets/checks.png")] // 256x256 checkerboard
 		private static const TextureBD	:Class;
 		
-		static public const Logger		:ILogger = Logging.getLogger(TestScene2D);		
+		static public const Logger:ILogger = Logging.getLogger(TestScene2D);		
 		
-		private var testA				:Polygon2D;
-		private var testB				:Polygon2D;
-		private var testC				:Polygon2D;
-		private var testD				:Polygon2D;
-		private var testE				:NapePolygon2D;
-		private var testF				:NapePolygon2D;
-		private var testG				:NapePolygon2D;
-		private var floor:NapeSprite2D;
+		private var testA	:Polygon2D;
+		private var testB	:Polygon2D;
+		private var testC	:Polygon2D;
+		private var testD	:Polygon2D;
+		private var testE	:NapePolygon2D;
+		private var testF	:NapePolygon2D;
+		private var testG	:NapePolygon2D;
+		private var floor	:NapeSprite2D;
 		
 		public function PolygonTestScene() {
 			super();
@@ -74,11 +75,11 @@ package mikedotalmond.napoleon.examples {
 			super.onAddedToStage(e);
 			
 			space.gravity 		= new Vec2(0, 32);
-			positionIterations 	= velocityIterations 	= 10;
+			positionIterations = velocityIterations = 10;
 			
-			bounds.x 				= 	bounds.y 				= -100;
-			bounds.width 		= stage.stageWidth  + 200;
-			bounds.height 		= stage.stageHeight + 200;
+			bounds.x 		= 	bounds.y 			= -100;
+			bounds.width 	= stage.stageWidth  + 200;
+			bounds.height = stage.stageHeight + 200;
 			
 			// Create some PolygonData to use when constructing new Polygon2D and NapePolygon2D objects
 			// PolygonData constructor takes either a point-cloud or list of prepared vertices to calculate 
@@ -155,7 +156,7 @@ package mikedotalmond.napoleon.examples {
 			}
 			
 			// test NapePolygon2D with the polygonData 
-			var testH:NapePolygon2D = new NapePolygon2D(polygonData, null, 0xffffffff*Math.random());
+			var testH:NapePolygon2D = new NapePolygon2D(polygonData, null, (0xff <<24) | 0xffffff*Math.random());
 			testH.init(getRandomStagePosition(), false, null, Material.glass());
 			addChild(testH);
 			
@@ -190,8 +191,8 @@ package mikedotalmond.napoleon.examples {
 				floor.y = h;
 			}
 			
-			bounds.width 	= stage.stageWidth  + 200;
-			bounds.height 	= stage.stageHeight + 200;
+			bounds.width	= stage.stageWidth  + 200;
+			bounds.height	= stage.stageHeight + 200;
 		}
 		
 		override protected function nodeLeavingBounds(node:Node2D):void {
@@ -202,9 +203,9 @@ package mikedotalmond.napoleon.examples {
 				nd.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
 				nd.body.position.y 	= bounds.y + Math.random() * 50;
 				nd.body.rotation 		= (Math.random() - 0.5) * Math.PI * 2;
-				nd.body.angularVel 	= (Math.random() - 0.5) * 2;
-				nd.body.velocity.x 		=  (Math.random() - 0.5) * 20;
-				nd.body.velocity.y 		= Math.random() * 2;
+				nd.body.angularVel = (Math.random() - 0.5) * 2;
+				nd.body.velocity.x 	=  (Math.random() - 0.5) * 20;
+				nd.body.velocity.y 	= Math.random() * 2;
 			}
 		}
 		
