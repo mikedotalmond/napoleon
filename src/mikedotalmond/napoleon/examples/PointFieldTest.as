@@ -29,11 +29,6 @@ package mikedotalmond.napoleon.examples {
 	
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
-	import mikedotalmond.napoleon.INapeNode;
-	import nape.phys.Body;
-	
-	import de.nulldesign.nd2d.display.Node2D;
-	import de.nulldesign.nd2d.display.Polygon2D;
 	
 	import flash.events.Event;
 	import flash.geom.Rectangle;
@@ -43,15 +38,16 @@ package mikedotalmond.napoleon.examples {
 	import mikedotalmond.napoleon.NapeScene2D;
 	
 	import nape.geom.Vec2;
+	import nape.phys.Body;
 	import nape.phys.Material;
 	
 	public final class PointFieldTest extends NapeScene2D {
 		
 		static public const Logger	:ILogger = Logging.getLogger(PointFieldTest);		
 		
-		private var fields		:Vector.<PointField>;
-		private var bodies	:Vector.<Body>;
-		private var middle		:PointField;
+		private var fields			:Vector.<PointField>;
+		private var bodies			:Vector.<Body>;
+		private var middle			:PointField;
 		
 		public function PointFieldTest(bounds:Rectangle = null) {
 			super(new Rectangle( -6400, -6400, 6400 * 2, 6400 * 2));
@@ -63,19 +59,17 @@ package mikedotalmond.napoleon.examples {
 		override protected function onAddedToStage(e:Event):void {
 			super.onAddedToStage(e);
 			
-			//space.gravity = new Vec2(0, 10);
-			
-			backgroundColor 	= 0;
+			backgroundColor	= 0;
 			mouseWheelZoom	= true;
-			camera.zoom = 0.2;
+			camera.zoom 	= 0.2;
 			
 			const n	:uint = 96;
 			const w	:uint = stage.stageWidth >> 1;
 			const h	:uint = stage.stageHeight >> 1;
 			
-			var i		:int;
-			var j		:int;
-			var poly	:NapePolygon2D;
+			var i	:int;
+			var j	:int;
+			var poly:NapePolygon2D;
 			
 			middle 	= new PointField(new Vec2(w, h), null, NaN, 50, 200);
 			fields	= new Vector.<PointField>(n, true);
@@ -84,10 +78,10 @@ package mikedotalmond.napoleon.examples {
 			i = n;
 			while (--i > -1) {
 				poly 	= new NapePolygon2D(NapePolygon2D.circle(12 + Math.random() * (i < 3 ? 128 : 24)), null, Math.random() * 0xffff6633);
-				poly.init(getRandomBoundsPosition(), true, null, Material.sand());//new Material(0, 0.1+Math.random(), 0.1+Math.random()*2, 0.1+Math.random()*5));
+				poly.init(getRandomBoundsPosition(), true, null, Material.sand());
 				
-				bodies[i] 	= poly.body;
-				fields[i]		= new PointField(null, poly.body, NaN, 0.05, 200);
+				bodies[i] = poly.body;
+				fields[i] = new PointField(null, poly.body, NaN, 0.05, 200);
 				
 				middle.addBody(poly.body);
 				addChild(poly);
@@ -106,7 +100,7 @@ package mikedotalmond.napoleon.examples {
 			var i:int = fields.length;
 			
 			middle.update();
-			while (--i > -1)  fields[i].update();
+			while (--i > -1) fields[i].update();
 			
 			super.step(elapsed);
 		}

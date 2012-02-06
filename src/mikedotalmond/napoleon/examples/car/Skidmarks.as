@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package mikedotalmond.napoleon.examples.carScene {
+package mikedotalmond.napoleon.examples.car {
 	
 	/**
 	 * ...
@@ -72,7 +72,7 @@ import com.furusystems.logging.slf4as.Logging;
 import de.nulldesign.nd2d.display.Quad2D;
 import de.nulldesign.nd2d.display.QuadList2D;
 import flash.geom.Vector3D;
-import mikedotalmond.napoleon.examples.carScene.WheelSprite2D;
+import mikedotalmond.napoleon.examples.car.WheelSprite2D;
 
 final internal class SkidList extends QuadList2D {
 	

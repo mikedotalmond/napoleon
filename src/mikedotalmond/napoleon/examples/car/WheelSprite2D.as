@@ -19,12 +19,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package mikedotalmond.napoleon.examples.carScene {
+package mikedotalmond.napoleon.examples.car {
 	
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
+	
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	
 	import mikedotalmond.napoleon.NapeSprite2D;
+	
 	import nape.geom.Vec2;
 	import nape.phys.Body;
 	import nape.phys.BodyType;
@@ -37,10 +40,10 @@ package mikedotalmond.napoleon.examples.carScene {
 	
 	public final class WheelSprite2D extends NapeSprite2D {
 		
-		private var _v0x				:Number;
-		private var _v0y				:Number;
-		private var _v1x				:Number;
-		private var _v1y				:Number;
+		private var _v0x			:Number;
+		private var _v0y			:Number;
+		private var _v1x			:Number;
+		private var _v1y			:Number;
 		private var _skidVertices	:Vector.<Vector3D> = Vector.<Vector3D>([new Vector3D(), new Vector3D(), new Vector3D(), new Vector3D()]);
 		
 		public function WheelSprite2D(textureObject:Texture2D=null){

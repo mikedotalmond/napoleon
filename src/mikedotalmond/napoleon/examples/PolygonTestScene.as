@@ -202,8 +202,8 @@ package mikedotalmond.napoleon.examples {
 			if (nd) { // reset positions along the top of the stage
 				nd.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
 				nd.body.position.y 	= bounds.y + Math.random() * 50;
-				nd.body.rotation 		= (Math.random() - 0.5) * Math.PI * 2;
-				nd.body.angularVel = (Math.random() - 0.5) * 2;
+				nd.body.rotation 	= (Math.random() - 0.5) * Math.PI * 2;
+				nd.body.angularVel 	= (Math.random() - 0.5) * 2;
 				nd.body.velocity.x 	=  (Math.random() - 0.5) * 20;
 				nd.body.velocity.y 	= Math.random() * 2;
 			}

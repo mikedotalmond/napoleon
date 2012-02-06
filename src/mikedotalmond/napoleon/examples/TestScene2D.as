@@ -65,6 +65,7 @@ package mikedotalmond.napoleon.examples {
 		public function TestScene2D() {
 			super();
 			Logger.info("Testing Nape + ND2D set-up and performance (NapeScene2D, NapeSprite2D, NapeQuad2D)");
+			
 			DConsole.createCommand("toggleWaterVisible", function():void {
 				if (water) water.visible = !water.visible;
 			});
@@ -81,16 +82,16 @@ package mikedotalmond.napoleon.examples {
 			positionIterations 	= velocityIterations = 12;
 			
 			// extend bounds beyond the visible on all sides - bounds used in NapeScene2D::nodeLeavingBounds
-			bounds.x 				= 	bounds.y 			= -100;
-			bounds.width 		= stage.stageWidth  + 200;
-			bounds.height 		= stage.stageHeight + 200;
+			bounds.x 		= 	bounds.y 		= -100;
+			bounds.width 	= stage.stageWidth  + 200;
+			bounds.height	= stage.stageHeight + 200;
 			
 			
 			// create random size/position NapeSprite2Ds (with simple textures), and a few NapeQuad2Ds too
 			
-			var test			:NapeSprite2D;
-			var quadTest	:NapeQuad2D;
-			var n				:int = 380;
+			var test	:NapeSprite2D;
+			var quadTest:NapeQuad2D;
+			var n		:int = 380;
 			
 			while (--n) { 
 				test = new NapeSprite2D(Texture2D.textureFromBitmapData(new BitmapData(22 + int(24 * Math.random()), 22 + int(24 * Math.random()), false, Math.random() * 0xffff0000)));
@@ -136,12 +137,12 @@ package mikedotalmond.napoleon.examples {
 			
 			// animate floor and water body properties
 			
-			floor.body.position.x 		= (w >> 1);
-			floor.body.position.y 		= h * 0.95 - (Math.sin(count/2) * h / 14);
+			floor.body.position.x 	= (w >> 1);
+			floor.body.position.y 	= h * 0.95 - (Math.sin(count/2) * h / 14);
 			
 			water.body.position.x 	= (w >> 1) - (Math.sin(count/2) * (w >> 2));
 			water.body.position.y 	= (h  >> 1) + (Math.sin(count) * (h >> 3));
-			water.body.rotation 		= Math.sin(count / Math.PI);
+			water.body.rotation 	= Math.sin(count / Math.PI);
 			
 			count += elapsed;
 		}
@@ -152,10 +153,10 @@ package mikedotalmond.napoleon.examples {
 			var nd:INapeNode = node as INapeNode;
 			if (nd) { 
 				// reset positions along the top of the stage
-				nd.body.velocity.x 		= nd.body.velocity.y = 0;
+				nd.body.velocity.x 	= nd.body.velocity.y = 0;
 				nd.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
 				nd.body.position.y 	= bounds.y + Math.random() * 50;
-				nd.body.rotation 		= Math.random() * 6.28;
+				nd.body.rotation 	= Math.random() * 6.28;
 				
 				// it's a quad? give it some new vertex positions...
 				if (nd is NapeQuad2D) {
@@ -171,10 +172,8 @@ package mikedotalmond.napoleon.examples {
 		
 		override public function resize(w:uint, h:uint):void {
 			super.resize(w, h);
-			
-			//bounds.x 				= 	bounds.y 			= -100;
-			bounds.width 		= stage.stageWidth  + 200;
-			bounds.height 		= stage.stageHeight + 200;
+			bounds.width 	= stage.stageWidth  + 200;
+			bounds.height 	= stage.stageHeight + 200;
 		}
 		
 		override public function dispose():void {
@@ -182,7 +181,6 @@ package mikedotalmond.napoleon.examples {
 			DConsole.removeCommand("toggleWaterVisible");
 			floor = null;
 			water = null;
-			
 		}
 	}
 }

@@ -19,14 +19,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package mikedotalmond.napoleon.examples.carScene {
+package mikedotalmond.napoleon.examples.car {
 	
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
 	
 	import flash.display.BitmapData;
 	
-	import mikedotalmond.napoleon.examples.carScene.Skidmarks;
-	import mikedotalmond.napoleon.examples.carScene.TyreSmoke;
+	import mikedotalmond.napoleon.examples.car.Skidmarks;
+	import mikedotalmond.napoleon.examples.car.TyreSmoke;
 	import mikedotalmond.napoleon.NapeScene2D;
 	import mikedotalmond.napoleon.NapeSprite2D;
 	
@@ -42,23 +42,23 @@ package mikedotalmond.napoleon.examples.carScene {
 	
 	public final class Car  {
 		
-		public var shell					:NapeSprite2D;
+		public var shell				:NapeSprite2D;
 		
 		private var _wheels				:Vector.<WheelSprite2D>
 		private var _wheelJoints		:Vector.<WheelJoint>
-		private var numWheels		:uint;
+		private var numWheels			:uint;
 		
 		private var tyreSmoke			:TyreSmoke;
 		private var skidmarks			:Skidmarks;
 		
-		public var skidWeights		:Vector.<Number>;
+		public var skidWeights			:Vector.<Number>;
 		
 		public var accelerationInput	:Number;
 		public var steeringInput		:Number;
-		public var handbreakInput	:Boolean;
+		public var handbreakInput		:Boolean;
 		
-		public var speed					:Number;
-		public var absSpeed			:Number;
+		public var speed				:Number;
+		public var absSpeed				:Number;
 		public var skidding				:Boolean;
 		
 		public var properties			:CarProperties;

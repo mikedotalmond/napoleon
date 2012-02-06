@@ -13,16 +13,16 @@ package mikedotalmond.napoleon.forces {
 		private const tempVec	:Vec2 = new Vec2();
 		private const tempVec2	:Vec2 = new Vec2();
 		
-		private var list				:Vector.<Body>;
-		private var _radius			:Number;		
-		private var _invRadius		:Number;
+		private var list		:Vector.<Body>;
+		private var _radius		:Number;		
+		private var _invRadius	:Number;
 		
-		public var owner				:Body;
-		public var mass				:Number;
-		public var position			:Vec2;
-		public var enabled			:Boolean
+		public var owner		:Body;
+		public var mass			:Number;
+		public var position		:Vec2;
+		public var enabled		:Boolean
 		
-		public var force				:Number;
+		public var force		:Number;
 		public var maxVelocity	:Number = 1000;
 		
 		/**
@@ -35,15 +35,15 @@ package mikedotalmond.napoleon.forces {
 		 */
 		public function PointField(position:Vec2, owner:Body = null, radius:Number = 100, force:Number = 5, maxVelocity:Number = 250) {
 			
-			this.position 			= position	? position : owner.position;
-			this.mass				= owner 	? owner.mass : 1;
+			this.position 		= position	? position : owner.position;
+			this.mass			= owner 	? owner.mass : 1;
 			this.owner 			= owner;
-			this.radius 			= radius;
-			this.force				= force;
+			this.radius 		= radius;
+			this.force			= force;
 			this.maxVelocity 	= maxVelocity;
 			
-			list 						= new Vector.<Body>();
-			enabled					= true;
+			list 				= new Vector.<Body>();
+			enabled				= true;
 		}
 		
 		
@@ -53,22 +53,22 @@ package mikedotalmond.napoleon.forces {
 		public function update():void {
 			if (!enabled) return;
 			
-			var b				:Body;
-			var i				:int = list.length;
+			var b:Body;
+			var i:int = list.length;
 			
-			const x			:Number = position.x;
-			const y			:Number = position.y;
-			const m		:Number = mass;
+			const x:Number = position.x;
+			const y:Number = position.y;
+			const m:Number = mass;
 			
-			var distance	:Number;
-			var dx			:Number;
-			var dy			:Number;
-			var theta		:Number;
-			var f				:Number;
+			var distance:Number;
+			var dx		:Number;
+			var dy		:Number;
+			var theta	:Number;
+			var f		:Number;
 			var diRange	:Number;
 			
 			while (--i > -1) {
-				b 				= list[i];
+				b 			= list[i];
 				dx 			= b.position.x - x;
 				dy 			= b.position.y - y;
 				distance 	= Math.sqrt( dx * dx + dy * dy );
@@ -127,7 +127,7 @@ package mikedotalmond.napoleon.forces {
 		
 		public function get radius():Number { return _radius; }		
 		public function set radius(value:Number):void {
-			_radius			= isNaN(value) ? Number.MAX_VALUE : value;
+			_radius		= isNaN(value) ? Number.MAX_VALUE : value;
 			_invRadius	= isNaN(value) ? Number.MIN_VALUE  : 1.0 / (value * value);
 		}
 	}

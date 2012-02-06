@@ -56,19 +56,19 @@ package mikedotalmond.napoleon {
 	
 	public class NapeWorld2D extends World2D {
 		
-		static public const Logger				:ILogger	= Logging.getLogger(NapeWorld2D);		
-		static public const VERSION			:String 		= Version.Major + "." + Version.Minor + "." + Version.Build + "." + Version.Revision;
+		static public const Logger			:ILogger	= Logging.getLogger(NapeWorld2D);		
+		static public const VERSION			:String 	= Version.Major + "." + Version.Minor + "." + Version.Build + "." + Version.Revision;
 		
-		protected var inputPollInterval			:Number 	= 1 / 25;
-		protected var lastDelta					:Number 	= 1 / 60;
+		protected var inputPollInterval		:Number 	= 1 / 25;
+		protected var lastDelta				:Number 	= 1 / 60;
 		
 		protected var GameControllerClass	:Class 		= null;
 		
-		protected var inputInterval				:Number 	= 0;
-		protected var inputUpdateSignal		:Signal 		= new Signal();
+		protected var inputInterval			:Number 	= 0;
+		protected var inputUpdateSignal		:Signal 	= new Signal();
 		
 		protected var currentSceneIndex		:int = -1;
-		protected var sceneClassList			:Vector.<Class> = new Vector.<Class>();
+		protected var sceneClassList		:Vector.<Class> = new Vector.<Class>();
 		protected var sceneClassNameList	:Vector.<String> = new Vector.<String>();
 		protected var napeScene				:NapeScene2D;
 		
@@ -90,14 +90,14 @@ package mikedotalmond.napoleon {
 		override protected function addedToStage(event:Event):void {
 			super.addedToStage(event);
 			
-			stage.align 			= StageAlign.TOP_LEFT;
-			stage.scaleMode 	= StageScaleMode.NO_SCALE;
-			stage.quality 		= StageQuality.LOW; // NOTE: turn this up if you're drawing shapes into bitmap data at any point...
+			stage.align 	= StageAlign.TOP_LEFT;
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.quality 	= StageQuality.LOW; // NOTE: turn this up if you're drawing shapes into bitmap data at any point...
 			stage.showDefaultContextMenu = false;
 			
 			const m:ContextMenu = new ContextMenu();
 			m.customItems 		= [new ContextMenuItem("napoleon " + VERSION, false, false)];
-			contextMenu 			= m;
+			contextMenu 		= m;
 			
 			KeyboardPlus.keyboardPlus.init(stage);
 			

@@ -22,25 +22,23 @@ THE SOFTWARE.
 package  {
 	
 	import com.furusystems.dconsole2.DConsole;
-	import flash.events.MouseEvent;
-	import mikedotalmond.napoleon.examples.binaryclock.BinaryClockScene;
-	import mikedotalmond.napoleon.examples.PointFieldTest;
+	import mikedotalmond.napoleon.examples.LineTest;
 	
 	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DRenderMode;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	
 	import mikedotalmond.input.KeyboardGamepadController;
 	import mikedotalmond.input.KeyboardPlus;
-	
-	import mikedotalmond.napoleon.NapeWorld2D;
-	import mikedotalmond.napoleon.examples.CarScene;
+	import mikedotalmond.napoleon.examples.binaryclock.BinaryClockScene;
+	import mikedotalmond.napoleon.examples.car.CarScene;
+	import mikedotalmond.napoleon.examples.PointFieldTest;
 	import mikedotalmond.napoleon.examples.PolygonTestScene;
-	import mikedotalmond.napoleon.examples.QuadListScene;
 	import mikedotalmond.napoleon.examples.TestScene2D;
-	
+	import mikedotalmond.napoleon.NapeWorld2D;
 	
 	/**
 	 * ...
@@ -87,6 +85,7 @@ package  {
 		}
 		
 		override protected function setupScenes():void {
+			addScene(LineTest, "lines");
 			addScene(BinaryClockScene, "clock");
 			addScene(TestScene2D, "boxes");
 			addScene(PolygonTestScene, "poly");
