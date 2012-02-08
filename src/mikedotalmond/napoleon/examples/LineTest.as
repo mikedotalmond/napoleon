@@ -3,12 +3,14 @@ package mikedotalmond.napoleon.examples {
 	/**
 	 * ...
 	 * @author Mike Almond - https://github.com/mikedotalmond
-	 */
-	
+	 */	
 	
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	
+	import com.furusystems.logging.slf4as.ILogger;
+	import com.furusystems.logging.slf4as.Logging;
 	
 	import de.nulldesign.nd2d.display.QuadLine2D;
 	
@@ -16,18 +18,21 @@ package mikedotalmond.napoleon.examples {
 	
 	public final class LineTest extends NapeScene2D {
 		
-		private var theta:Number = 0.0;
-		private var line:QuadLine2D;
+		static public const Logger	:ILogger 	= Logging.getLogger(QuadLine2D);		
+		
+		private var theta			:Number 	= 0.0;
+		private var line			:QuadLine2D;
 		
 		public function LineTest(bounds:Rectangle=null) {
 			super(bounds);
+			Logger.info("Testing QuadLine2D line drawing methods");
 		}
 		
 		override protected function onAddedToStage(e:Event):void {
 			super.onAddedToStage(e);
 			mouseWheelZoom = true;
 			
-			line = new QuadLine2D(128, true);
+			line = new QuadLine2D(256);
 			addChild(line);
 			/*
 			line.lineStyle(16, 0xff0000, 0.5);
@@ -92,32 +97,33 @@ package mikedotalmond.napoleon.examples {
 			super.step(elapsed);
 			theta += elapsed;
 			
-			var w:int = stage.stageWidth / 2;
-			var h:int = stage.stageHeight / 2;
+			const w:int = _width / 2;
+			const h:int = _height / 2;
 			
 			line.clear();
-			line.lineStyle(8, 0x0080ff, 0.5);
+			line.lineStyle(6, 0x6080ff, 0.5);
 			line.moveTo(0, h);
 			line.curveThroughPoints(Vector.<Point>([
 				new Point(0, h),
-				new Point(480 + 320 * Math.sin(theta), h + Math.tan(theta) * 128),
-				new Point(stage.stageWidth - 480 - 320 * Math.cos(theta), h - Math.cos(theta) * 128),
+				new Point(w/2 + 180 * Math.sin(theta + Math.PI / 2), h + Math.sin(theta) * 164),
+				new Point(w + 180 * Math.sin(theta), h + Math.sin(theta) * 256),
+				new Point(stage.stageWidth - 400 - 164 * Math.cos(theta), h - Math.cos(theta) * 256),
 				new Point(stage.stageWidth, h)
-			]), 32);
+			]), 20);
 			
-			line.lineStyle(8, 0xff, 0.5);
+			line.lineStyle(4, 0xff, 0.5);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta-Math.PI) * w, h - Math.sin(theta-Math.PI) * h);
 			
-			line.lineStyle(8, 0xffff, 0.5);
+			line.lineStyle(8, 0xffffff, 0.5);
 			line.moveTo(w, h);
 			line.lineTo(w - Math.cos(theta-Math.PI) * w, h + Math.sin(theta-Math.PI) * h);
 			
-			line.lineStyle(8, 0xff00, 0.5);
+			line.lineStyle(16, 0xff00, 0.5);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta+Math.PI/2) * w, h - Math.sin(theta+Math.PI/2) * h);
 			
-			line.lineStyle(8, 0xff0000, 0.5);
+			line.lineStyle(32, 0xff0000, 0.5);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta-Math.PI/2) * w, h - Math.sin(theta-Math.PI/2) * h);
 		}
