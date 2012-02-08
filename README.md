@@ -18,6 +18,7 @@ The project is still early in development, so things are likely to change and br
 #New for ND2D
 - de.nulldesign.nd2d.display.Polygon2D 
 - de.nulldesign.nd2d.display.QuadList2D 
+- de.nulldesign.nd2d.display.QuadLine2D
 - de.nulldesign.nd2d.geom.PolygonData 
 - de.nulldesign.nd2d.material.APolygon2DMaterial 
 - de.nulldesign.nd2d.material.Polygon2DColorMaterial 
@@ -38,12 +39,11 @@ The project is still early in development, so things are likely to change and br
 - More (better) demos / example projects
 - More control over Polygon2D vertices
 - setVertexPosition(s) for (Nape)Polygon2D
-- Sprite-sheet support for Polygon2D
+- Sprite-sheet support for Polygon2D (needed?)
 - Vertex weighted texture blending for Polygon2DTextureMaterial
 - NapeQuadList2D + general compound physics body support
 - ?Polygons with holes (composed of convex polys..?) 
 - ?Concave Polygon support? (composed of convex polys..?)
-- Line / curve drawing
 
 ----------
 
