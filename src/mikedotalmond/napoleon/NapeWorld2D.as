@@ -180,7 +180,8 @@ package mikedotalmond.napoleon {
 			
 			addChild(DConsole.view);
 			DConsole.view.alpha = 0.8;
-			DConsole.console.createCommand("step", mainLoop, "NapeWorld2D");
+			DConsole.console.createCommand("pause", pause, "NapeWorld2D");
+			DConsole.console.createCommand("step", function():void { mainLoop(null);} , "NapeWorld2D");
 			DConsole.console.createCommand("resume", resume, "NapeWorld2D");
 			DConsole.console.createCommand("sleep", sleep, "NapeWorld2D");
 			DConsole.console.createCommand("wakeUp", wakeUp, "NapeWorld2D");
@@ -195,7 +196,7 @@ package mikedotalmond.napoleon {
 			Logger.info("napoleon", VERSION);
 			Logger.info("-------------------");
 			Logger.info("Ctrl+Shift+Enter to show/hide this console");
-			Logger.info("Some commands: sceneList, setActiveScene, fullscreen, pause, resume, sleep, wakeUp");
+			Logger.info("Some commands: sceneList, setActiveScene, fullscreen, pause, step, resume, sleep, wakeUp");
 			Logger.info("Available scenes:", getSceneList());
 		}
 		
