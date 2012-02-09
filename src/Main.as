@@ -23,6 +23,7 @@ package  {
 	
 	import com.furusystems.dconsole2.DConsole;
 	import mikedotalmond.napoleon.examples.LineTest;
+	import mikedotalmond.napoleon.examples.QuadListScene;
 	
 	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DRenderMode;
@@ -85,13 +86,13 @@ package  {
 		}
 		
 		override protected function setupScenes():void {
-			addScene(LineTest, "lines");
 			addScene(BinaryClockScene, "clock");
 			addScene(TestScene2D, "boxes");
 			addScene(PolygonTestScene, "poly");
 			addScene(CarScene, "car");
-			//addScene(QuadListScene, "quad");
 			addScene(PointFieldTest, "gravity");
+			addScene(LineTest, "lines");
+			//addScene(QuadListScene, "quad");
 		}
 		
 		override protected function context3DCreated(e:Event):void {
