@@ -17,6 +17,7 @@
   <classpaths>
     <class path="src" />
     <class path="..\nd2d\src" />
+    <class path="..\nd2d\examples" />
   </classpaths>
   <!-- Build options -->
   <build>

@@ -39,6 +39,7 @@ package  {
 	import mikedotalmond.napoleon.examples.PointFieldTest;
 	import mikedotalmond.napoleon.examples.PolygonTestScene;
 	import mikedotalmond.napoleon.examples.TestScene2D;
+	import mikedotalmond.napoleon.examples.PostProcessingTest;
 	import mikedotalmond.napoleon.NapeWorld2D;
 	
 	/**
@@ -86,6 +87,7 @@ package  {
 		}
 		
 		override protected function setupScenes():void {
+			addScene(PostProcessingTest, "post");
 			addScene(BinaryClockScene, "clock");
 			addScene(TestScene2D, "boxes");
 			addScene(PolygonTestScene, "poly");
