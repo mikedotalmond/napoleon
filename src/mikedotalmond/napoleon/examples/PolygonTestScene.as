@@ -195,18 +195,14 @@ package mikedotalmond.napoleon.examples {
 			bounds.height	= stage.stageHeight + 200;
 		}
 		
-		override protected function nodeLeavingBounds(node:Node2D):void {
+		override protected function nodeLeavingBounds(node:INapeNode):void {
 			if (floor === node) return;
-			
-			var nd:INapeNode = node as INapeNode;
-			if (nd) { // reset positions along the top of the stage
-				nd.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
-				nd.body.position.y 	= bounds.y + Math.random() * 50;
-				nd.body.rotation 	= (Math.random() - 0.5) * Math.PI * 2;
-				nd.body.angularVel 	= (Math.random() - 0.5) * 2;
-				nd.body.velocity.x 	=  (Math.random() - 0.5) * 20;
-				nd.body.velocity.y 	= Math.random() * 2;
-			}
+			node.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
+			node.body.position.y 	= bounds.y + Math.random() * 50;
+			node.body.rotation 		= (Math.random() - 0.5) * Math.PI * 2;
+			node.body.angularVel 	= (Math.random() - 0.5) * 2;
+			node.body.velocity.x 	=  (Math.random() - 0.5) * 20;
+			node.body.velocity.y 	= Math.random() * 2;
 		}
 		
 		override public function dispose():void {

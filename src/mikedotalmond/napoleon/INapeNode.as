@@ -39,6 +39,9 @@ package mikedotalmond.napoleon {
 		function get body():Body; // the Nape pyhsics body
 		
 		// these are here to make sure the physics body properties get updated too - means you have to override these public functions of Node2D in your implementation
+		function get visible():Boolean;
+		function get x():Number;
+		function get y():Number;
 		function set x(value:Number):void;
 		function set y(value:Number):void;
 		function set rotation(value:Number):void;

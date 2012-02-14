@@ -91,19 +91,19 @@ package mikedotalmond.napoleon {
 			// step through the physics simulation...
 			space.step(1.0 / (elapsed * 1000), velocityIterations, positionIterations);
 			
-			const b		:Rectangle = _bounds;
+			const b:Rectangle = _bounds;
 			
 			if (b) { // have bounds set? check for objects leaving the bounds
-				var n		:int = children.length;
-				var nd	:Node2D;
+				var n	:int = children.length;
+				var nd	:INapeNode;
 				while (--n > -1) {
-					nd = children[n];
-					if (nd.visible && (nd.x < b.left || nd.x > b.right || nd.y < b.top || nd.y > b.bottom)) nodeLeavingBounds(nd);
+					nd = children[n] as INapeNode;
+					if (nd && nd.visible && (nd.x < b.left || nd.x > b.right || nd.y < b.top || nd.y > b.bottom)) nodeLeavingBounds(nd);
 				}
 			}
 		}
 		
-		protected function nodeLeavingBounds(node:Node2D):void {
+		protected function nodeLeavingBounds(node:INapeNode):void {
 			// override as required...
 		}
 		

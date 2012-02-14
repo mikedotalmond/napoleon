@@ -147,26 +147,23 @@ package mikedotalmond.napoleon.examples {
 			count += elapsed;
 		}
 		
-		override protected function nodeLeavingBounds(node:Node2D):void {
+		override protected function nodeLeavingBounds(node:INapeNode):void {
 			if (node == water || node == floor) return;
 			
-			var nd:INapeNode = node as INapeNode;
-			if (nd) { 
-				// reset positions along the top of the stage
-				nd.body.velocity.x 	= nd.body.velocity.y = 0;
-				nd.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
-				nd.body.position.y 	= bounds.y + Math.random() * 50;
-				nd.body.rotation 	= Math.random() * 6.28;
-				
-				// it's a quad? give it some new vertex positions...
-				if (nd is NapeQuad2D) {
-					(nd as NapeQuad2D).setVertexPositions( //set some random positions (this occasionally makes concave surfaces that aren't supported by the physics...)
-						new Vector3D( -10 -80 * Math.random(), -10 -80 * Math.random()), 
-						new Vector3D(10+80 * Math.random(),-10 -80 * Math.random()), 
-						new Vector3D(10+80* Math.random(), 10+80 * Math.random()), 
-						new Vector3D( -10-80* Math.random(), 10+80* Math.random())
-					);
-				}
+			// reset positions along the top of the stage
+			node.body.velocity.x 	= node.body.velocity.y = 0;
+			node.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
+			node.body.position.y 	= bounds.y + Math.random() * 50;
+			node.body.rotation 	= Math.random() * 6.28;
+			
+			// it's a quad? give it some new vertex positions...
+			if (node is NapeQuad2D) {
+				(node as NapeQuad2D).setVertexPositions( //set some random positions (this occasionally makes concave surfaces that aren't supported by the physics...)
+					new Vector3D( -10 -80 * Math.random(), -10 -80 * Math.random()), 
+					new Vector3D(10+80 * Math.random(),-10 -80 * Math.random()), 
+					new Vector3D(10+80* Math.random(), 10+80 * Math.random()), 
+					new Vector3D( -10-80* Math.random(), 10+80* Math.random())
+				);
 			}
 		}
 		
