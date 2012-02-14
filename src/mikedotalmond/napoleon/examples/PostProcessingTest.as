@@ -30,27 +30,36 @@
 
 package mikedotalmond.napoleon.examples {
 
+	import com.furusystems.logging.slf4as.ILogger;
+	import com.furusystems.logging.slf4as.Logging;
+	
 	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Sprite2D;
 	import de.nulldesign.nd2d.display.TextureRenderer;
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
+	
+	import flash.events.Event;
+	
 	import mikedotalmond.napoleon.postprocess.PointLight;
+	
 	import tests.SideScrollerTest;
 
-	import flash.events.Event;
 
 	/**
-	 * testing PointLight - based on the ND2D tests.PostProcessingTest
+	 * testing PointLight - based on the ND2D tests.PostProcessingTest - same scene, different post-process
 	 */
 	public final class PostProcessingTest extends SideScrollerTest {
-
-		private var pointLight:PointLight;
-        private var sceneNode:Node2D;
-        private var textureRenderer:TextureRenderer;
-        private var postProcessedScene:Sprite2D;
+		
+		static private const Logger		:ILogger = Logging.getLogger(PostProcessingTest);		
+		
+		private var pointLight			:PointLight;
+        private var sceneNode			:Node2D;
+        private var textureRenderer		:TextureRenderer;
+        private var postProcessedScene	:Sprite2D;
 
         public function PostProcessingTest() {
             super();
+			Logger.info("Testing napoleon.postprocess.PointLight - test scene taken from ND2D tests.PostProcessingTest");
         }
 
         override protected function addedToStage(e:Event):void {
@@ -72,7 +81,10 @@ package mikedotalmond.napoleon.examples {
             textureRenderer 	= new TextureRenderer(sceneNode, renderTexture, 0.0, 0.0);
             addChild(textureRenderer);
 			
-			pointLight 			= new PointLight(stage.stageWidth, stage.stageHeight, textureRenderer.width, textureRenderer.height);
+			pointLight 					= new PointLight(stage.stageWidth, stage.stageHeight, textureRenderer.width, textureRenderer.height);
+			//pointLight.size				= 32;
+			//pointLight.backgroundLevel	= 0;
+			//pointLight.saturationLevel	= 0.5;
 			
 			postProcessedScene 	= new Sprite2D(renderTexture);
             postProcessedScene.setMaterial(pointLight);
