@@ -85,6 +85,7 @@ package mikedotalmond.napoleon.examples {
 			//pointLight.size				= 32;
 			//pointLight.backgroundLevel	= 0;
 			//pointLight.saturationLevel	= 0.5;
+			//pointLight.additiveLevel = 0.5;
 			
 			postProcessedScene 	= new Sprite2D(renderTexture);
             postProcessedScene.setMaterial(pointLight);

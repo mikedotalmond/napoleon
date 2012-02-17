@@ -81,7 +81,7 @@ package mikedotalmond.napoleon.postprocess {
 			"tex ft1, ft0, fs0 <2d,clamp,nearest,nomip>  \n" + // sample texture		
 			
 			"sub ft0.xy ft0.xy fc2.xy 					\n" + // calc distance - xy delta
-			"mul ft0.x ft0.x fc3.y	 					\n" + // scale x distance by scene aspect ratio
+			"mul ft0.x ft0.x fc3.z	 					\n" + // scale x distance by scene aspect ratio
 			"mul ft0.xy ft0.xy ft0.xy 					\n" + // square the xy pair
 			"add ft0.x ft0.x ft0.y 						\n" + // add squared x,y components together
 			"rsq ft0.x ft0.x 							\n" + // calc distane - 1.0/sqrt(value)
@@ -95,6 +95,9 @@ package mikedotalmond.napoleon.postprocess {
 			"mult ft0.z ft0.z fc3.x						\n" + // mult overbright by overBright prog const (fc3.y)
 			"add ft0.x ft0.x ft0.z						\n" + // add allowed overbright back to saturated attenuation value
 			
+			/** added option for additive level */
+			"mul ft0.y ft0.x fc3.y	 					\n" + // mult atten by additive amount
+			"add ft1.xyz ft1.xyz ft0.y 					\n" + // add additive amount to sampled texture
 			"mul ft1.xyz ft1.xyz ft0.x 					\n" + // mult sampled texture by attenuation
 			
 			"mul ft1, ft1, fc0                          \n" + // mult with colorMultiplier
@@ -120,6 +123,7 @@ package mikedotalmond.napoleon.postprocess {
 		public var size								:Number = 32;
 		public var backgroundLevel					:Number = -0.015;
 		public var saturationLevel					:Number = 0.5; // positive values only... unless you want a black-hole with light around it... 
+		public var additiveLevel					:Number = 0; //
 		
         public function PointLight(stageWidth:uint, stageHeight:uint, textureWidth:uint, textureHeight:uint) {
 			
@@ -153,7 +157,7 @@ package mikedotalmond.napoleon.postprocess {
 			xRatio 			= w / textureWidth;
 			yRatio 			= h / textureHeight;
 			sizeRatio		= 1.0 / h;
-			extraConsts[1]	= w / h;
+			extraConsts[2]	= w / h;
 		}
 		
         override protected function prepareForRender(context:Context3D):void {
@@ -165,6 +169,7 @@ package mikedotalmond.napoleon.postprocess {
 			programConstVector[2] 	= size * sizeRatio;
 			programConstVector[3] 	= backgroundLevel;
 			extraConsts[0] 			= saturationLevel;
+			extraConsts[1] 			= additiveLevel;
 			
             context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 2, programConstVector);
             context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 3, extraConsts);
