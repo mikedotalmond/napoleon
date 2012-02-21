@@ -3,6 +3,7 @@ package {
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
 	import flash.display.BitmapData;
+	
 	import nape.geom.AABB;
 	import nape.geom.GeomPoly;
 	import nape.geom.GeomPolyList;
@@ -14,7 +15,10 @@ package {
 	import nape.phys.Material;
 	import nape.shape.Polygon;
 	import nape.space.Space;
-	import net.nicoptere.delaunay.DelaunayTriangle;
+	
+	/**
+	 * Based on code from the terrain marching-squares + convex decomposition demo for Nape
+	 */
 	
 	public class MarchingConvexDecomposition {
 		
@@ -29,22 +33,24 @@ package {
 		public var space		:Space;
 		public var cells		:Vector.<Body>;
 		public var compoundBody	:Compound;
+		public var marchQuality	:int;
 		
 		public function MarchingConvexDecomposition(space:Space):void {
 			this.space = space;
 		}
 		
-		public function run(bitmap:BitmapData, offset:Vec2, cellsize:Number, subsize:Number, material:Material = null):void {
+		public function run(bitmap:BitmapData, offset:Vec2, cellsize:Number, subsize:Number, marchQuality:int = 2, material:Material = null):void {
 			
-			this.bitmap 	= bitmap;
-			this.offset 	= offset;
-			this.cellsize 	= cellsize;
-			this.subsize 	= subsize;
+			this.bitmap 		= bitmap;
+			this.offset 		= offset;
+			this.cellsize 		= cellsize;
+			this.subsize 		= subsize;
+			this.marchQuality 	= marchQuality;
 			
-			width  			= int(Math.ceil(bitmap.width/cellsize));
-			height 			= int(Math.ceil(bitmap.height/cellsize));
-			cells			= new Vector.<Body>(width * height, true);
-			compoundBody 	= new Compound();
+			width  				= int(Math.ceil(bitmap.width / cellsize));
+			height 				= int(Math.ceil(bitmap.height / cellsize));
+			cells				= new Vector.<Body>(width * height, true);
+			compoundBody 		= new Compound();
 			
 			invalidate(new AABB(0, 0, bitmap.width, bitmap.height), material);
 			
@@ -97,7 +103,7 @@ package {
 					//compute polygons in cell
 					bounds.x = x*cellsize;
 					bounds.y = y*cellsize;
-					polys = MarchingSquares.run(iso, bounds, Vec2.weak(subsize, subsize), 8);
+					polys = MarchingSquares.run(iso, bounds, Vec2.weak(subsize, subsize), marchQuality);
 					if (polys.length == 0) continue;
 					
 					if (b == null) {
@@ -112,8 +118,6 @@ package {
 							b.shapes.add(new Polygon(q, polyMaterial));
 						});
 					});
-					
-					//b.space = space;
 				}
 			}
 			

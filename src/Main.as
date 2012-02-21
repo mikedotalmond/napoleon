@@ -22,6 +22,8 @@ THE SOFTWARE.
 package  {
 	
 	import com.furusystems.dconsole2.DConsole;
+	//import mikedotalmond.napoleon.examples.LogoTest;
+	import mikedotalmond.napoleon.examples.TerrainScene;
 	
 	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DRenderMode;
@@ -89,6 +91,7 @@ package  {
 		
 		override protected function setupScenes():void {
 			//addScene(LogoTest, "logo");
+			addScene(TerrainScene, "terrain");
 			addScene(PostProcessingTest, "post");
 			addScene(BinaryClockScene, "clock");
 			addScene(TestScene2D, "boxes");
