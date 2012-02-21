@@ -23,15 +23,17 @@ package mikedotalmond.napoleon {
 	
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
-	import de.nulldesign.nd2d.materials.texture.Texture2D;
-	import nape.shape.Circle;
+	import de.nulldesign.nd2d.geom.Vertex;
 	
-	import flash.geom.Vector3D;
+	import de.nulldesign.nd2d.materials.texture.Texture2D;
+	
 	import nape.geom.Vec2;
 	import nape.phys.Body;
 	import nape.phys.BodyType;
 	import nape.phys.Material;
+	import nape.shape.Circle;
 	import nape.shape.Polygon;
+	
 	
 	 /**
 	  * Adds a Nape phyiscs body and properties to a Polygon2D
@@ -68,7 +70,7 @@ package mikedotalmond.napoleon {
 		 * @param	points - a convex polygon hull (vertices)
 		 * @return	Polygon shape data
 		 */
-		static private function polyFromHull(points:Vector.<Vector3D>):Polygon {
+		static private function polyFromHull(points:Vector.<Vertex>):Polygon {
 			points.fixed = true;
 			var n:int = points.length;
 			var a:/*Vec2*/Array = new Array();
@@ -102,7 +104,7 @@ package mikedotalmond.napoleon {
 			_body 		= new Body(bodyType == null ? BodyType.DYNAMIC : bodyType);
 			_isCircle	= isCircle;
 			
-			_body.shapes.add(isCircle ? new Circle(polygonData.bounds.width / 2) : polyFromHull(polygonData.vertices));
+			_body.shapes.add(isCircle ? new Circle(polygonData.bounds.width / 2) : polyFromHull(polygonData.polygonVertices));
 			if(physMaterial) _body.setShapeMaterials(physMaterial);
 			
 			x = position.x;

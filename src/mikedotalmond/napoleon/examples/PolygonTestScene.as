@@ -28,6 +28,7 @@ package mikedotalmond.napoleon.examples {
 	
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
+	import de.nulldesign.nd2d.geom.Vertex;
 	
 	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Polygon2D;
@@ -77,16 +78,16 @@ package mikedotalmond.napoleon.examples {
 			space.gravity 		= new Vec2(0, 32);
 			positionIterations = velocityIterations = 10;
 			
-			bounds.x 		= 	bounds.y 			= -100;
+			bounds.x 		= 	bounds.y 		= -100;
 			bounds.width 	= stage.stageWidth  + 200;
-			bounds.height = stage.stageHeight + 200;
+			bounds.height = stage.stageHeight 	+ 200;
 			
 			// Create some PolygonData to use when constructing new Polygon2D and NapePolygon2D objects
 			// PolygonData constructor takes either a point-cloud or list of prepared vertices to calculate 
 			// polygon properties and data for constructing new Polygon2D/NapePolygon2D instances
-			const polygonData:PolygonData = new PolygonData(Vector.<Vector3D>([
-				new Vector3D(0, -10), new Vector3D(100, 20), new Vector3D(50, -20), new Vector3D(150, 50),
-				new Vector3D(65, 120), new Vector3D(20, 100), new Vector3D(120, 120), new Vector3D( -20, 50)])
+			const polygonData:PolygonData = new PolygonData(Vector.<Vertex>([
+				new Vertex(0, -10), new Vertex(100, 20), new Vertex(50, -20), new Vertex(150, 50),
+				new Vertex(65, 120), new Vertex(20, 100), new Vertex(120, 120), new Vertex( -20, 50)])
 			);
 			
 			// a polygon with flat colour
