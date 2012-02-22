@@ -259,6 +259,10 @@ package mikedotalmond.napoleon {
 		 * @param	value
 		 */
 		override public function setActiveScene(value:Scene2D):void {
+			/*
+			if(sceneTransition.active) sceneTransition.cancel();
+			*/
+			
 			if(scene) scene.dispose();
 			
 			super.setActiveScene(value);

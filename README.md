@@ -36,14 +36,12 @@ The project is still early in development, so things are likely to change and br
 ----------
 
 #TODO
+- Scene transitions (optional) in NapeWorld2D (setActiveScene)
 - More (better) demos / example projects
 - More control over Polygon2D vertices
 - setVertexPosition(s) for (Nape)Polygon2D
 - Sprite-sheet support for Polygon2D (needed?)
 - Vertex weighted texture blending for Polygon2DTextureMaterial
-- NapeQuadList2D + general compound physics body support
-- ?Polygons with holes (composed of convex polys..?) 
-- ?Concave Polygon support? (composed of convex polys..?)
 
 ----------
 

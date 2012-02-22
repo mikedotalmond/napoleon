@@ -20,7 +20,7 @@ package {
 	 * Based on code from the terrain marching-squares + convex decomposition demo for Nape
 	 */
 	
-	public class MarchingConvexDecomposition {
+	public final class MarchingConvexDecomposition {
 		
 		private var cellsize	:Number;
 		private var subsize		:Number;
@@ -34,6 +34,7 @@ package {
 		public var cells		:Vector.<Body>;
 		public var compoundBody	:Compound;
 		public var marchQuality	:int;
+		public var polyCount	:int;
 		
 		public function MarchingConvexDecomposition(space:Space):void {
 			this.space = space;
@@ -77,8 +78,8 @@ package {
 		//invalidate a region of the terrain to be regenerated.
 		public function invalidate(region:AABB, polyMaterial:Material = null):void {
 			bitmap.lock();
-			
-			bounds = new AABB(0, 0, cellsize, cellsize);
+			polyCount 	= 0;
+			bounds 		= new AABB(0, 0, cellsize, cellsize);
 			//compute effected cells
 			var x0:int = int(region.min.x/cellsize); if(x0<0) x0 = 0;
 			var y0:int = int(region.min.y/cellsize); if(y0<0) y0 = 0;
@@ -88,9 +89,9 @@ package {
 			var b		:Body;
 			var polys	:GeomPolyList;
 			var qs		:GeomPolyList;
-			
-			for(var y:int = y0; y<=y1; y++) {
-				for(var x:int  = x0; x<=x1; x++) {
+			var x:int, y:int;
+			for(y = y0; y<=y1; y++) {
+				for(x = x0; x<=x1; x++) {
 					b = cells[int(y * width + x)];
 					if (b != null) {
 						//if cell body exists, clear it for re-use
@@ -116,6 +117,7 @@ package {
 						qs = p.convex_decomposition();
 						qs.foreach(function (q:GeomPoly):void {
 							b.shapes.add(new Polygon(q, polyMaterial));
+							polyCount++;
 						});
 					});
 				}

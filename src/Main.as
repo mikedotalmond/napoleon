@@ -91,7 +91,7 @@ package  {
 		
 		override protected function setupScenes():void {
 			//addScene(LogoTest, "logo");
-			//addScene(TerrainScene, "terrain");
+			addScene(TerrainScene, "terrain");
 			addScene(PostProcessingTest, "post");
 			addScene(BinaryClockScene, "clock");
 			addScene(TestScene2D, "boxes");
