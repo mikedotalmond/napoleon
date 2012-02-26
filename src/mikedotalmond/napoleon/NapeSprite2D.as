@@ -39,7 +39,7 @@ package mikedotalmond.napoleon {
 	  */
 	public class NapeSprite2D extends Sprite2D implements INapeNode {
 		
-		private static const _180Pi							:Number = 180 / Math.PI;
+		private static const _180Pi				:Number = 180 / Math.PI;
 		public static const BODY_SHAPE_CIRCLE	:uint = 0;
 		public static const BODY_SHAPE_BOX		:uint = 1;
 		//public static const BODY_SHAPE_POLY	:uint = 2; //TODO:implement polygon shapes for NapeSprite2D
@@ -93,6 +93,7 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			if (_body) {
+				_body.clear();
 				_body.space = null;
 				_body 		= null;
 			}

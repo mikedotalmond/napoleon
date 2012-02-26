@@ -101,17 +101,21 @@ package mikedotalmond.napoleon {
 		 */
 		public function init(position:Vec2, isCircle:Boolean = false, bodyType:BodyType = null, physMaterial:Material = null):Body {
 			
-			_body 		= new Body(bodyType == null ? BodyType.DYNAMIC : bodyType);
-			_isCircle	= isCircle;
+			initWithBody(position, new Body(bodyType == null ? BodyType.DYNAMIC : bodyType));
+			_isCircle = isCircle;
 			
 			_body.shapes.add(isCircle ? new Circle(polygonData.bounds.width / 2) : polyFromHull(polygonData.polygonVertices));
 			if(physMaterial) _body.setShapeMaterials(physMaterial);
 			
-			x = position.x;
-			y = position.y;
-			rotation = 0;
-			
 			return _body;
+		}
+		
+		
+		public function initWithBody(position:Vec2, body:Body):void {
+			_body 		= body;
+			x 			= position.x;
+			y 			= position.y;
+			rotation 	= 0;
 		}
 		
 		
@@ -123,6 +127,7 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			if (_body) {
+				_body.clear();
 				_body.space = null;
 				_body 		= null;
 			}
@@ -142,7 +147,7 @@ package mikedotalmond.napoleon {
 		override public function set rotation(value:Number):void {
 			super.rotation = value;
 			if (_body) _body.rotation = value / _180Pi;
-		} 
+		}
 		
 		private var _body					:Body;
 		public function get body()			:Body { return _body; }

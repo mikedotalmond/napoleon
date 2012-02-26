@@ -111,8 +111,8 @@ package mikedotalmond.napoleon.postprocess {
 		
 		private var textureWidth					:uint;
 		private var textureHeight					:uint;
-		private var stageWidth						:uint;
-		private var stageHeight						:uint;
+		private var displayWidth					:uint;
+		private var displayHeight					:uint;
 		
 		private var xRatio							:Number;
 		private var yRatio							:Number;
@@ -125,13 +125,13 @@ package mikedotalmond.napoleon.postprocess {
 		public var saturationLevel					:Number = 0.5; // positive values only... unless you want a black-hole with light around it... 
 		public var additiveLevel					:Number = 0; //
 		
-        public function PointLight(stageWidth:uint, stageHeight:uint, textureWidth:uint, textureHeight:uint) {
+        public function PointLight(displayWidth:uint, displayHeight:uint, textureWidth:uint, textureHeight:uint) {
 			
 			extraConsts.fixed 		= true;
 			this.textureWidth  		= textureWidth;
 			this.textureHeight 		= textureHeight;
 			
-			stageResize(stageWidth, stageHeight);
+			stageResize(displayWidth, displayHeight);
 			
             super();
         }
@@ -142,8 +142,8 @@ package mikedotalmond.napoleon.postprocess {
 		 * @param	y
 		 */
 		public function setPosition(x:Number, y:Number):void {
-			pctX = x / stageWidth;
-			pctY = y / stageHeight;
+			pctX = x / displayWidth;
+			pctY = y / displayHeight;
 		}
 		
 		/**
@@ -152,8 +152,8 @@ package mikedotalmond.napoleon.postprocess {
 		 * @param	h
 		 */
 		public function stageResize(w:uint, h:uint):void {
-			stageWidth  	= w;
-			stageHeight 	= h;
+			displayWidth  	= w;
+			displayHeight 	= h;
 			xRatio 			= w / textureWidth;
 			yRatio 			= h / textureHeight;
 			sizeRatio		= 1.0 / h;

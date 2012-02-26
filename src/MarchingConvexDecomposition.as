@@ -14,6 +14,7 @@ package {
 	import nape.phys.Compound;
 	import nape.phys.Material;
 	import nape.shape.Polygon;
+	import nape.shape.Shape;
 	import nape.space.Space;
 	
 	/**
@@ -27,12 +28,13 @@ package {
 		private var bounds		:AABB;
 		private var width		:int;
 		private var height		:int;
+		private var offset		:Vec2;
 		
 		public var bitmap		:BitmapData;
-		public var offset		:Vec2;
+		
 		public var space		:Space;
 		public var cells		:Vector.<Body>;
-		public var compoundBody	:Compound;
+		public var body			:Body;
 		public var marchQuality	:int;
 		public var polyCount	:int;
 		
@@ -40,7 +42,7 @@ package {
 			this.space = space;
 		}
 		
-		public function run(bitmap:BitmapData, offset:Vec2, cellsize:Number, subsize:Number, marchQuality:int = 2, material:Material = null):void {
+		public function run(bitmap:BitmapData, offset:Vec2, cellsize:Number, subsize:Number, marchQuality:int = 2, bodyType:BodyType = null, material:Material = null):void {
 			
 			this.bitmap 		= bitmap;
 			this.offset 		= offset;
@@ -48,12 +50,14 @@ package {
 			this.subsize 		= subsize;
 			this.marchQuality 	= marchQuality;
 			
-			width  				= int(Math.ceil(bitmap.width / cellsize));
-			height 				= int(Math.ceil(bitmap.height / cellsize));
-			cells				= new Vector.<Body>(width * height, true);
-			compoundBody 		= new Compound();
+			if (bodyType == null) bodyType = BodyType.DYNAMIC;
 			
-			invalidate(new AABB(0, 0, bitmap.width, bitmap.height), material);
+			width  	= int(Math.ceil(bitmap.width / cellsize));
+			height 	= int(Math.ceil(bitmap.height / cellsize));
+			cells	= new Vector.<Body>(width * height, true);
+			body 	= new Body(bodyType);
+			
+			invalidate(new AABB(0, 0, bitmap.width, bitmap.height), bodyType, material);
 			
 			cells.fixed = false;
 			
@@ -67,16 +71,27 @@ package {
 					n--;
 					i--;
 				} else {
-					compoundBody.bodies.add(b);
+					// re assign all the shapes into a single nape body...
+					b.shapes.foreach(function(p:Shape):void {
+						var p2:Polygon = Shape.copy(p).castPolygon;
+						p2.localVerts.foreach(function(v:Vec2):void {
+							v.addeq(b.position);
+						});
+						body.shapes.add(p2);
+					});
+					
+					b.space = null;
+					b.clear();
 				}
 			}
 			
-			cells.fixed 		= true;
-			compoundBody.space	= space;
+			cells.length 	= 0;
+			cells 			= null;
+			body.space		= space;
 		}
 		
 		//invalidate a region of the terrain to be regenerated.
-		public function invalidate(region:AABB, polyMaterial:Material = null):void {
+		public function invalidate(region:AABB, bodyType:BodyType, polyMaterial:Material = null):void {
 			bitmap.lock();
 			polyCount 	= 0;
 			bounds 		= new AABB(0, 0, cellsize, cellsize);
@@ -93,8 +108,7 @@ package {
 			for(y = y0; y<=y1; y++) {
 				for(x = x0; x<=x1; x++) {
 					b = cells[int(y * width + x)];
-					if (b != null) {
-						//if cell body exists, clear it for re-use
+					if (b != null) { // if cell body exists, clear it for re-use
 						b.space = null;
 						b.clear();
 						b.position = offset;

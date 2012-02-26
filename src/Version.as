@@ -9,7 +9,7 @@ package  {
 		static public const Major:int = 0;
 		static public const Minor:int = 0;
 		static public const Build:int = 1;
-		static public const Revision:int = 5943;
+		static public const Revision:int = 6192;
 		
 	}
 	

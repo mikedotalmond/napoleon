@@ -2,9 +2,15 @@ package mikedotalmond.napoleon.examples {
 	
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
+	import mikedotalmond.napoleon.NapePolygon2D;
+	import mikedotalmond.napoleon.NapeQuad2D;
+	import nape.phys.BodyType;
+	import nape.phys.Material;
+	
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
+	
 	import flash.utils.getTimer;
 	
 	import flash.display.Bitmap;
@@ -20,9 +26,10 @@ package mikedotalmond.napoleon.examples {
 	 * @author Mike Almond - https://github.com/mikedotalmond
 	 */
 	public final class TerrainScene extends NapeScene2D {
-				
+		private var poly:NapePolygon2D;
+		
 		static public const Logger:ILogger = Logging.getLogger(TerrainScene);		
-				
+		
 		//[Embed(source="../../../../../nd2d/examples/assets/ceiling_texture.png")]
 		[Embed(source="../../../../../nd2d/examples/assets/grass_ground.png")]
 		protected static const GROUND	:Class;
@@ -37,6 +44,7 @@ package mikedotalmond.napoleon.examples {
 			
 			backgroundColor = 0x809070;
 			mouseWheelZoom 	= true;
+			space.gravity = new Vec2(0, 15);
 			
 			const b			:Bitmap 						= new GROUND();
 			const bd		:BitmapData 					= b.bitmapData;
@@ -44,29 +52,32 @@ package mikedotalmond.napoleon.examples {
 			
 			var start:int = getTimer();
 			
-			decomposer.run(bd, Vec2.get(0, 0), 64, 4, 1);
+			decomposer.run(bd, new Vec2( -bd.width / 2, -bd.height / 2), 64, 4, 2, BodyType.DYNAMIC, Material.wood());
 			
-			var polyData:PolygonData 	= PolygonData.fromBodyShapes(decomposer.cells, bd.width, bd.height, decomposer.offset);
-			var poly	:Polygon2D 		= new Polygon2D(polyData, null, 0xff000000);
-			//var poly:Polygon2D = new Polygon2D(polyData, Texture2D.textureFromBitmapData(new GROUND().bitmapData), 0xff000000);
+			var polyData:PolygonData = PolygonData.fromBodyShapes(decomposer.body, bd.width, bd.height);
+			poly = new NapePolygon2D(polyData, null, 0xff000000);
+			poly.initWithBody(new Vec2(640,360), decomposer.body);
 			
 			Logger.info("Took " + 
 						(getTimer() - start) + // 30ms in standalone release player - about double that for the debug player (running a release build)
 						"ms to decompose the bitmap (" +
 						bd.width + "x" + bd.height + 
 						") into a total of " + 
-						decomposer.cells.length + 
-						" Nape bodies,consisting of " + 
 						decomposer.polyCount + 
-						" polygons,\nand then triangulate them all into a mesh containing " + 
+						" polygons and " + 
 						(polyData.triangleVertices.length / 3) + 
 						" triangles");
-			
-			
+						
 			poly.material.asColorMaterial.debugTriangles = true;
-			//poly.x = 320;
-			poly.y = 250;
-			addChild(poly);			
+			container.addChild(poly);			
+			
+			var floor:NapeQuad2D = new NapeQuad2D(1280, 50);
+			floor.init(Vec2.weak(640, 720 - 25), null, BodyType.STATIC, Material.sand());
+			addChild(floor);
+		}
+		
+		override protected function step(elapsed:Number):void {
+			super.step(elapsed);
 		}
 	}
 }

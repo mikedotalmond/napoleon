@@ -26,6 +26,7 @@ package mikedotalmond.napoleon {
 	import com.furusystems.dconsole2.plugins.SystemInfoUtil;
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
+	import mikedotalmond.napoleon.examples.PolygonTestScene;
 	
 	import de.nulldesign.nd2d.display.Scene2D;
 	import de.nulldesign.nd2d.display.World2D;
@@ -53,27 +54,26 @@ package mikedotalmond.napoleon {
 	 * @see de.nulldesign.nd2d.display.World2D
 	 * @author Mike Almond - https://github.com/mikedotalmond
 	 */
-	
 	public class NapeWorld2D extends World2D {
 		
-		static public const Logger			:ILogger	= Logging.getLogger(NapeWorld2D);		
-		static public const VERSION			:String 	= Version.Major + "." + Version.Minor + "." + Version.Build + "." + Version.Revision;
+		static public const Logger			:ILogger			= Logging.getLogger(NapeWorld2D);
+		static public const VERSION			:String 			= Version.Major + "." + Version.Minor + "." + Version.Build + "." + Version.Revision;
 		
-		protected var inputPollInterval		:Number 	= 1 / 25;
-		protected var lastDelta				:Number 	= 1 / 60;
+		protected var lastDelta				:Number 			= 1 / 60;
+		protected var inputPollInterval		:Number 			= 1 / 25;
 		
-		protected var GameControllerClass	:Class 		= null;
+		protected var GameControllerClass	:Class 				= null;
+		protected var inputInterval			:Number 			= 0;
+		protected var inputUpdateSignal		:Signal 			= new Signal();
 		
-		protected var inputInterval			:Number 	= 0;
-		protected var inputUpdateSignal		:Signal 	= new Signal();
+		protected var currentSceneIndex		:int 				= -1;
+		protected var sceneClassList		:Vector.<Class> 	= new Vector.<Class>();
+		protected var sceneClassNameList	:Vector.<String> 	= new Vector.<String>();
 		
-		protected var currentSceneIndex		:int = -1;
-		protected var sceneClassList		:Vector.<Class> = new Vector.<Class>();
-		protected var sceneClassNameList	:Vector.<String> = new Vector.<String>();
-		protected var napeScene				:NapeScene2D;
+		public var napeScene				:NapeScene2D		= null;
 		
 		/**
-		 * 
+		 *
 		 * @param	renderMode
 		 * @param	frameRate
 		 * @param	bounds
@@ -83,8 +83,10 @@ package mikedotalmond.napoleon {
 			super(renderMode, frameRate, bounds, stageID);
 		}
 		
+		
+		
 		/**
-		 * 
+		 *
 		 * @param	event
 		 */
 		override protected function addedToStage(event:Event):void {
@@ -105,12 +107,54 @@ package mikedotalmond.napoleon {
 			setupDConsole();
 		}
 		
+		
+		
+		/**
+		 * Create some commands, print some messages...
+		 */
+		protected function setupDConsole():void {
+			
+			// register some plugins
+			DConsole.registerPlugins(StatsOutputUtil, SystemInfoUtil);
+			
+			// nape/nd2d world control
+			DConsole.console.createCommand("pause", pause, "NapeWorld2D");
+			DConsole.console.createCommand("step", function():void { mainLoop(null);} , "NapeWorld2D");
+			DConsole.console.createCommand("resume", resume, "NapeWorld2D");
+			DConsole.console.createCommand("sleep", sleep, "NapeWorld2D");
+			DConsole.console.createCommand("wakeUp", wakeUp, "NapeWorld2D");
+			DConsole.console.createCommand("fullscreen", function():void { stage.displayState = StageDisplayState.FULL_SCREEN; DConsole.hide(); }, "NapeWorld2D");
+			
+			// scene stuff....
+			DConsole.console.createCommand("nextScene", nextScene, "NapeWorld2D");
+			DConsole.console.createCommand("prevScene", function():void { nextScene( -1); }, "NapeWorld2D");
+			DConsole.console.createCommand("sceneList", getSceneList, "NapeWorld2D");
+			DConsole.console.createCommand("setActiveScene", setActiveSceneByName, "NapeWorld2D");
+			
+			
+			// add it to the stage
+			DConsole.view.alpha = 0.8;
+			addChild(DConsole.view);
+			
+			Logger.info("napoleon", VERSION);
+			Logger.info("-------------------");
+			Logger.info("Ctrl+Shift+Enter to show/hide this console");
+			Logger.info("Some commands: nextScene, prevScene, sceneList, setActiveScene, fullscreen, pause, step, resume, sleep, wakeUp");
+			Logger.info("Available scenes:", getSceneList());
+		}
+		
+		
+		
+		/* ##start scene management */
+		/* ============================ */
+		
 		/**
 		 * @throws IllegalOperationError (if not overriden)
 		 */
 		protected function setupScenes():void {
 			throw new IllegalOperationError("setupScenes requires implementation");
 		}
+		
 		
 		
 		/**
@@ -131,9 +175,10 @@ package mikedotalmond.napoleon {
 		}
 		
 		
+		
 		/**
 		 * Remove a scene from the scene-list, either by class, or name
-		 * (doesn't deactivate / destroy the scene if it's the current scene, just removes it from the list of available scenes)
+		 * NOTE: This doesn't deactivate / destroy the scene if it's the current scene, just removes it from the list of available scenes.
 		 * @param	scene
 		 * @param	name
 		 * @return	The new length of the scene list
@@ -145,7 +190,7 @@ package mikedotalmond.napoleon {
 				i = sceneClassNameList.indexOf(name) ;
 			} else if (scene != null) {
 				i = sceneClassList.indexOf(scene) ;
-			} 
+			}
 			
 			if (i != -1) {
 					sceneClassList.splice(i, 1);
@@ -157,13 +202,15 @@ package mikedotalmond.napoleon {
 			return sceneClassNameList.length;
 		}
 		
+		
+		
 		 /**
 		 * select the next scene from the list
 		  * @param	direction	-1/1
 		  */
 		protected function nextScene(direction:int=1):void {
 			if (sceneClassList.length == 0) {
-				Logger.warn("Nothing to select! Use addScene to add your scenes to the list...");
+				Logger.warn("Nothing to select! Use addScene to add some scenes to the list...");
 				return;
 			}
 			currentSceneIndex += direction;
@@ -173,43 +220,18 @@ package mikedotalmond.napoleon {
 		}
 		
 		
-		/**
-		 * Create some commands, print some messages...
-		 */
-		protected function setupDConsole():void {
-			
-			addChild(DConsole.view);
-			DConsole.view.alpha = 0.8;
-			DConsole.console.createCommand("pause", pause, "NapeWorld2D");
-			DConsole.console.createCommand("step", function():void { mainLoop(null);} , "NapeWorld2D");
-			DConsole.console.createCommand("resume", resume, "NapeWorld2D");
-			DConsole.console.createCommand("sleep", sleep, "NapeWorld2D");
-			DConsole.console.createCommand("wakeUp", wakeUp, "NapeWorld2D");
-			DConsole.console.createCommand("fullscreen", function():void { 
-				stage.displayState = StageDisplayState.FULL_SCREEN; DConsole.hide(); 
-			}, "NapeWorld2D");
-			
-			DConsole.console.createCommand("sceneList", getSceneList, "NapeWorld2D");
-			DConsole.console.createCommand("setActiveScene", setActiveSceneByName, "NapeWorld2D");
-			DConsole.registerPlugins(StatsOutputUtil, SystemInfoUtil);
-			
-			Logger.info("napoleon", VERSION);
-			Logger.info("-------------------");
-			Logger.info("Ctrl+Shift+Enter to show/hide this console");
-			Logger.info("Some commands: sceneList, setActiveScene, fullscreen, pause, step, resume, sleep, wakeUp");
-			Logger.info("Available scenes:", getSceneList());
-		}
 		
 		/**
-		 * 
+		 *
 		 * @return A String of comma sperated names of scenes in the sceneClassList
 		 */
 		protected function getSceneList():String {
 			return sceneClassNameList.toString();
 		}
 		
+		
 		/**
-		 * 
+		 *
 		 * @param	scene - Name of the scene to activate
 		 */
 		protected function setActiveSceneByName(scene:String):void {
@@ -224,44 +246,13 @@ package mikedotalmond.napoleon {
 			}
 		}
 		
-		/**
-		 * 
-		 * @param	e
-		 */
-		protected function toggleFullscreen(e:Event = null):void {
-			try {
-				stage.displayState = (stage.displayState == StageDisplayState.FULL_SCREEN) ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
-			} catch (err:Error) {
-				Logger.error(err); // allowFullscreen not set?
-			}
-		}
+		
 		
 		/**
-		 * 
-		 * @param	e
-		 */
-		override protected function context3DError(e:ErrorEvent):void {
-			super.context3DError(e);
-		}
-		
-		/**
-		 * 
-		 * @param	e
-		 */
-		override protected function context3DCreated(e:Event):void {
-			super.context3DCreated(e);
-			DConsole.show();
-			start();
-		}
-		
-		/**
-		 * 
+		 *
 		 * @param	value
 		 */
 		override public function setActiveScene(value:Scene2D):void {
-			/*
-			if(sceneTransition.active) sceneTransition.cancel();
-			*/
 			
 			if(scene) scene.dispose();
 			
@@ -278,8 +269,50 @@ package mikedotalmond.napoleon {
 			System.pauseForGCIfCollectionImminent();
 		}
 		
+		
+		/* ##end scene management */
+		/* ====================== */
+		
+		
+		
 		/**
-		 * 
+		 *
+		 * @param	e
+		 */
+		protected function toggleFullscreen(e:Event = null):void {
+			try {
+				stage.displayState = (stage.displayState == StageDisplayState.FULL_SCREEN) ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
+			} catch (err:Error) {
+				Logger.error(err); // allowFullscreen not set?
+			}
+		}
+		
+		
+		
+		/**
+		 *
+		 * @param	e
+		 */
+		override protected function context3DError(e:ErrorEvent):void {
+			super.context3DError(e);
+		}
+		
+		
+		
+		/**
+		 *
+		 * @param	e
+		 */
+		override protected function context3DCreated(e:Event):void {
+			super.context3DCreated(e);
+			DConsole.show();
+			start();
+		}
+		
+		
+		
+		/**
+		 *
 		 * @param	e
 		 */
 		override protected function mainLoop(e:Event):void {
@@ -287,12 +320,12 @@ package mikedotalmond.napoleon {
 			if (scene && context3D) {
 				
 				var time	:Number = getTimer() * 0.001;
-				var delta:Number = time - lastFramesTime;
+				var delta	:Number = time - lastFramesTime;
 				
 				lastFramesTime = time;
 				
-				delta 	-= (delta - lastDelta) * 0.9; // ease changes to the delta time for smoother physics
-				lastDelta = delta;
+				delta 		-=	(delta - lastDelta) * 0.9; // ease changes to the delta time (a bit) for smoother physics
+				lastDelta 	=	delta;
 				
 				if ((inputInterval += delta) >= inputPollInterval) { // update inputs
 					inputUpdateSignal.dispatch();
@@ -303,8 +336,10 @@ package mikedotalmond.napoleon {
 			}
 		}
 		
+		
+		
 		/**
-		 * 
+		 *
 		 * @param	e
 		 */
 		override protected function resizeStage(e:Event = null):void {
