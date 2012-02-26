@@ -69,7 +69,7 @@ package mikedotalmond.napoleon.examples {
 						" triangles");
 						
 			poly.material.asColorMaterial.debugTriangles = true;
-			container.addChild(poly);			
+			addChild(poly);			
 			
 			var floor:NapeQuad2D = new NapeQuad2D(1280, 50);
 			floor.init(Vec2.weak(640, 720 - 25), null, BodyType.STATIC, Material.sand());
@@ -78,6 +78,7 @@ package mikedotalmond.napoleon.examples {
 		
 		override protected function step(elapsed:Number):void {
 			super.step(elapsed);
+			//Logger.info(poly.position.toString());
 		}
 	}
 }

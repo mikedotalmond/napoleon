@@ -89,7 +89,7 @@ package mikedotalmond.napoleon {
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			resize(stage.stageWidth, stage.stageHeight);
 			mouseWheelZoom = _mouseWheelZoom;
-			addChild(container);
+			//addChild(container);
 		}
 		
 		override protected function step(elapsed:Number):void {
