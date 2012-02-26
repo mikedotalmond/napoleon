@@ -40,6 +40,7 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			super.dispose();
+			_space = null;
 		}
 	}
 }

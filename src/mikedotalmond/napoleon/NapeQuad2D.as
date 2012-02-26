@@ -96,9 +96,12 @@ package mikedotalmond.napoleon {
 		}
 		
 		override public function dispose():void {
+			if (_body) {
+				_body.clear();
+				_body.space = null;
+				_body 		= null;
+			}
 			super.dispose();
-			_body.space = null;
-			_body 		= null;
 		}
 		
 		override public function set x(value:Number):void {

@@ -36,10 +36,12 @@ package mikedotalmond.napoleon {
 	
 	 /**
 	  * @author Mike Almond - https://github.com/mikedotalmond
-	  * 
+	  *
 	 * Adds Nape physics Space to the Scene2D, so we can deal with INapeNode children
 	 * */
 	public class NapeScene2D extends Scene2D {
+		
+		private static const _180Pi:Number = 180 / Math.PI;
 		
 		private var _mouseWheelZoom:Boolean = false;
 		public function get mouseWheelZoom():Boolean { return _mouseWheelZoom; }
@@ -63,13 +65,16 @@ package mikedotalmond.napoleon {
 			_gameController.update.add(onControllerUpdate);
 		}
 		
-		private var _bounds			:Rectangle = null;
-		public function get bounds():Rectangle { return _bounds; }
+		private var _bounds				:Rectangle = null;
 		
+		public function get bounds()	:Rectangle { return _bounds; }
 		
-		public var space					:Space  = new Space();
-		public var velocityIterations	:uint 		= 10;
-		public var positionIterations	:uint 		= 10;
+		public var spacePaused			:Boolean			= false;
+		public var space				:Space				= new Space();
+        public var container			:NapeContainer2D 	= new NapeContainer2D(space);
+		
+		public var velocityIterations	:uint 				= 10;
+		public var positionIterations	:uint 				= 10;
 		
 		/**
 		 *  Construct a new NapeScene2D, optionally proviiding a bounding rectangle for the nodeLeavingBounds
@@ -84,21 +89,26 @@ package mikedotalmond.napoleon {
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			resize(stage.stageWidth, stage.stageHeight);
 			mouseWheelZoom = _mouseWheelZoom;
+			addChild(container);
 		}
 		
 		override protected function step(elapsed:Number):void {
 			
-			// step through the physics simulation...
-			space.step(1.0 / (elapsed * 1000), velocityIterations, positionIterations);
-			
-			const b:Rectangle = _bounds;
-			
-			if (b) { // have bounds set? check for objects leaving the bounds
-				var n	:int = children.length;
-				var nd	:INapeNode;
-				while (--n > -1) {
-					nd = children[n] as INapeNode;
-					if (nd && nd.visible && (nd.x < b.left || nd.x > b.right || nd.y < b.top || nd.y > b.bottom)) nodeLeavingBounds(nd);
+			if (!spacePaused) {
+				// step through the physics simulation...
+				space.step(1.0 / (elapsed * 1000), velocityIterations, positionIterations);
+				
+				const b:Rectangle = _bounds;
+				
+				if (b) { // have bounds set? check for nape objects leaving the bounds
+					const children	:Vector.<Node2D> 	= container.children;
+					children.fixed 						= true;
+					var n			:int 				= children.length;
+					var nd			:INapeNode;
+					while (--n > -1) {
+						nd = children[n] as INapeNode;
+						if (nd && nd.visible && (nd.x < b.left || nd.x > b.right || nd.y < b.top || nd.y > b.bottom)) nodeLeavingBounds(nd);
+					}
 				}
 			}
 		}
@@ -108,11 +118,11 @@ package mikedotalmond.napoleon {
 		}
 		
 		protected function getRandomStagePosition():Vec2 {
-			return new Vec2(stage.stageWidth * Math.random(), stage.stageHeight * Math.random());		
+			return new Vec2(stage.stageWidth * Math.random(), stage.stageHeight * Math.random());
 		}
 		
 		protected function getRandomBoundsPosition():Vec2 {
-			return new Vec2(bounds.x + bounds.width * Math.random(), bounds.y + bounds.height * Math.random());		
+			return new Vec2(bounds.x + bounds.width * Math.random(), bounds.y + bounds.height * Math.random());
 		}
 		
 		public function resize(w:uint, h:uint):void {
@@ -146,6 +156,7 @@ package mikedotalmond.napoleon {
 		}
 		
 		override public function dispose():void {
+			
 			_bounds = null;
 			mouseWheelZoom = false;
 			_gameController.update.remove(onControllerUpdate);
@@ -153,8 +164,14 @@ package mikedotalmond.napoleon {
 			_gameController = null;
 			camera.x = camera.y = 0;
 			camera.zoom = 1;
+			
 			super.dispose();
 			if (parent) parent.removeChild(this);
+			
+			container = null;
+			
+			space.clear();
+			space = null;
 		}
 	}
 }

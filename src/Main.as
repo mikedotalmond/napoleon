@@ -22,8 +22,6 @@ THE SOFTWARE.
 package  {
 	
 	import com.furusystems.dconsole2.DConsole;
-	//import mikedotalmond.napoleon.examples.LogoTest;
-	import mikedotalmond.napoleon.examples.TerrainScene;
 	
 	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DRenderMode;
@@ -42,6 +40,7 @@ package  {
 	import mikedotalmond.napoleon.examples.PolygonTestScene;
 	import mikedotalmond.napoleon.examples.PostProcessingTest;
 	import mikedotalmond.napoleon.examples.TestScene2D;
+	import mikedotalmond.napoleon.examples.TerrainScene;
 	import mikedotalmond.napoleon.NapeWorld2D;
 	
 	
