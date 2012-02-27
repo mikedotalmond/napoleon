@@ -1,29 +1,26 @@
 package mikedotalmond.napoleon.examples {
 	
+	import com.furusystems.dconsole2.DConsole;
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
+	
 	import de.nulldesign.nd2d.display.QuadLine2D;
-	import mikedotalmond.napoleon.INapeNode;
-	import mikedotalmond.napoleon.NapePolygon2D;
-	import mikedotalmond.napoleon.NapeQuad2D;
-	import nape.constraint.DistanceJoint;
-	import nape.phys.Body;
-	import nape.phys.BodyType;
-	import nape.phys.Material;
-	
-	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
-	import de.nulldesign.nd2d.materials.texture.Texture2D;
-	
-	import flash.utils.getTimer;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.events.Event;
+	import flash.utils.getTimer;
 	
+	import mikedotalmond.napoleon.INapeNode;
+	import mikedotalmond.napoleon.BitmapToPolygon;
+	import mikedotalmond.napoleon.NapePolygon2D;
 	import mikedotalmond.napoleon.NapeScene2D;
-
+	
+	import nape.constraint.DistanceJoint;
 	import nape.geom.Vec2;
+	import nape.phys.BodyType;
+	import nape.phys.Material;
 	
 	/**
 	 * ...
@@ -43,10 +40,26 @@ package mikedotalmond.napoleon.examples {
 		private var jointLine			:QuadLine2D;
 		private var platformPivot		:NapePolygon2D;
 		
+		private var debugTris			:Boolean = false;
+		
 		public function TerrainScene() {
 			super();
 			Logger.info("Testing decomposition of a bitmap with alpha channel into a series of convex Nape polygons, a Nape object, and a Polygon2D mesh");
 			Logger.info("Also testing out the nape LineJoint, with QuadLine2D to draw lines between the anchors");
+			Logger.info("Use 'debugTriangles' to see the triangles in the main mesh");
+			
+			DConsole.createCommand("debugTriangles", toggleDebugTriangles, null, "toggle a debug-draw mode on the main mesh so you can see the triangles")
+		}
+		
+		private function toggleDebugTriangles():void {
+			debugTris = !debugTris;
+			if (debugTris) {
+				bitmapPoly.material.asColorMaterial.randomiseVertexColors();
+				platformPivot.material.asColorMaterial.randomiseVertexColors();
+			} else {
+				platformPivot.material.asColorMaterial.color = platformPivot.material.asColorMaterial.color;
+				bitmapPoly.material.asColorMaterial.color = bitmapPoly.material.asColorMaterial.color;
+			}
 		}
 		
 		override protected function onAddedToStage(e:Event):void {
@@ -62,37 +75,12 @@ package mikedotalmond.napoleon.examples {
 			backgroundColor 	= 0x809070;
 			mouseWheelZoom 		= true;
 			
-			
-			const b			:Bitmap 						= new GROUND();
-			const bd		:BitmapData 					= b.bitmapData;
-			const decomposer:MarchingConvexDecomposition	= new MarchingConvexDecomposition(space);
-			
-			var start:int = getTimer();
-			
-			decomposer.run(bd, new Vec2( -bd.width / 2, -bd.height / 2), 64, 4, 2, BodyType.DYNAMIC, Material.sand());
-			
-			var polyData:PolygonData = PolygonData.fromBodyShapes(decomposer.body, bd.width, bd.height);
-			bitmapPoly = new NapePolygon2D(polyData, null, 0xff000000);
-			bitmapPoly.initWithBody(new Vec2(640,560), decomposer.body);
-			
-			Logger.info("Took " + 
-						(getTimer() - start) + // 30ms in standalone release player - about double that for the debug player (running a release build)
-						"ms to decompose the bitmap (" +
-						bd.width + "x" + bd.height + 
-						") into a total of " + 
-						decomposer.polyCount + 
-						" polygons and " + 
-						(polyData.triangleVertices.length / 3) + 
-						" triangles");
-						
-			//bitmapPoly.material.asColorMaterial.debugTriangles = true;
-			addChild(bitmapPoly);
-			
-			var test:NapePolygon2D;
-			
+			doBitmapToPoly();
 			setupJoints();
 			
-			// some pentagons
+			
+			var test:NapePolygon2D;
+			// add some pentagons
 			bounds.bottom = stage.stageHeight >> 1;
 			var n:int = 256;
 			while (--n) {
@@ -102,7 +90,7 @@ package mikedotalmond.napoleon.examples {
 				addChild(test);
 			}
 			
-			//some hexagons
+			// .. aand some hexagons, why not.
 			n = 128
 			while (--n) {
 				test = new NapePolygon2D(NapePolygon2D.regularPolygon(15 + Math.random()*10,6), null, 0xffa3d0ac);
@@ -112,6 +100,36 @@ package mikedotalmond.napoleon.examples {
 			}
 			
 			bounds.bottom <<= 1;
+		}
+		
+		private function doBitmapToPoly():void {
+			
+			const b				:Bitmap 			= new GROUND();
+			const bd			:BitmapData 		= b.bitmapData;
+			const bitmapToPoly	:BitmapToPolygon	= new BitmapToPolygon(space);
+			const start			:int				= getTimer();
+			
+			bitmapToPoly.run(bd, new Vec2( -bd.width / 2, -bd.height / 2), 64, 4, 2, BodyType.DYNAMIC, Material.sand());
+			
+			const polyData:PolygonData 	= PolygonData.fromBodyShapes(bitmapToPoly.body, bd.width, bd.height);
+			bitmapPoly 					= new NapePolygon2D(polyData, null, 0xff000000);
+			bitmapPoly.initWithBody(new Vec2(640,560), bitmapToPoly.body);
+			
+			Logger.info("Took " + 
+						(getTimer() - start) + // ~30ms in standalone release player - about double that for the debug player (running a release build)
+						"ms to decompose the bitmap (" +
+						bd.width + "x" + bd.height + 
+						") into a total of " + 
+						bitmapToPoly.polyCount + 
+						" polygons and " + 
+						(polyData.triangleVertices.length) + 
+						" triangle vertices");
+						
+			// want to see the triangles?
+			// bitmapPoly.material.asColorMaterial.debugTriangles = true;
+			
+			addChild(bitmapPoly);
+			bitmapToPoly.dispose();
 		}
 		
 		private function setupJoints():void {
@@ -136,7 +154,6 @@ package mikedotalmond.napoleon.examples {
 			
 			jointLine = new QuadLine2D(2);
 			addChild(jointLine);
-			
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -183,6 +200,21 @@ package mikedotalmond.napoleon.examples {
 			node.body.angularVel 	= (Math.random() - 0.5) * 2;
 			node.body.velocity.x 	=  (Math.random() - 0.5) * 20;
 			node.body.velocity.y 	= Math.random() * 2;
+		}
+		
+		override public function dispose():void {
+			
+			super.dispose();
+			
+			DConsole.removeCommand("debugTriangles");
+			
+			pJoint1.space 	= null;	
+			pJoint1 		= null;
+			pJoint2.space 	= null;	
+			pJoint2			= null;	
+			bitmapPoly		= null;	
+			jointLine		= null;	
+			platformPivot 	= null;
 		}
 	}
 }

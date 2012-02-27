@@ -1,7 +1,8 @@
-package {
+package mikedotalmond.napoleon {
 	
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
+	
 	import flash.display.BitmapData;
 	
 	import nape.geom.AABB;
@@ -21,7 +22,7 @@ package {
 	 * Based on code from the terrain marching-squares + convex decomposition demo for Nape
 	 */
 	
-	public final class MarchingConvexDecomposition {
+	public final class BitmapToPolygon {
 		
 		private var cellsize	:Number;
 		private var subsize		:Number;
@@ -38,10 +39,32 @@ package {
 		public var marchQuality	:int;
 		public var polyCount	:int;
 		
-		public function MarchingConvexDecomposition(space:Space):void {
+		/**
+		 * 
+		 * @param	space
+		 */
+		public function BitmapToPolygon(space:Space):void {
 			this.space = space;
 		}
 		
+		public function dispose():void {
+			space 	= null;
+			cells 	= null;
+			body  	= null;
+			bitmap 	= null;
+			bounds 	= null;
+		}
+		
+		/**
+		 * 
+		 * @param	bitmap
+		 * @param	offset
+		 * @param	cellsize
+		 * @param	subsize
+		 * @param	marchQuality
+		 * @param	bodyType
+		 * @param	material
+		 */
 		public function run(bitmap:BitmapData, offset:Vec2, cellsize:Number, subsize:Number, marchQuality:int = 2, bodyType:BodyType = null, material:Material = null):void {
 			
 			this.bitmap 		= bitmap;
