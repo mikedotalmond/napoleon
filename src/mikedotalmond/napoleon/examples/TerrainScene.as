@@ -1,3 +1,25 @@
+/*
+Copyright (c) 2012 Mike Almond - @mikedotalmond - https://github.com/mikedotalmond
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 package mikedotalmond.napoleon.examples {
 	
 	import com.furusystems.dconsole2.DConsole;
@@ -37,7 +59,7 @@ package mikedotalmond.napoleon.examples {
 		
 		private var pJoint1				:DistanceJoint;
 		private var pJoint2				:DistanceJoint;
-		private var jointLine			:QuadLine2D;
+		private var jointLines			:QuadLine2D;
 		private var platformPivot		:NapePolygon2D;
 		
 		private var debugTris			:Boolean = false;
@@ -53,7 +75,7 @@ package mikedotalmond.napoleon.examples {
 		
 		private function toggleDebugTriangles():void {
 			debugTris = !debugTris;
-			if (debugTris) {
+			if (debugTris) { // randomise vertex colours so we can see the triangles...
 				bitmapPoly.material.asColorMaterial.randomiseVertexColors();
 				platformPivot.material.asColorMaterial.randomiseVertexColors();
 			} else {
@@ -75,33 +97,19 @@ package mikedotalmond.napoleon.examples {
 			backgroundColor 	= 0x809070;
 			mouseWheelZoom 		= true;
 			
+			// convert the input bitmapdata to a NapePolygon2D (should probably be Mesh2D I guess... refactor pending I think.)
 			doBitmapToPoly();
+			
+			// suspend the created polygon mesh from two line joints to make swinging platform...
 			setupJoints();
 			
-			
-			var test:NapePolygon2D;
-			// add some pentagons
-			bounds.bottom = stage.stageHeight >> 1;
-			var n:int = 256;
-			while (--n) {
-				test = new NapePolygon2D(NapePolygon2D.regularPolygon(10 + Math.random()*20,5), null, 0xffdad03c);
-				test.init(getRandomBoundsPosition(), false, null, Material.steel()); 
-				//test.material.asColorMaterial.debugTriangles = true;
-				addChild(test);
-			}
-			
-			// .. aand some hexagons, why not.
-			n = 128
-			while (--n) {
-				test = new NapePolygon2D(NapePolygon2D.regularPolygon(15 + Math.random()*10,6), null, 0xffa3d0ac);
-				test.init(getRandomBoundsPosition(), false, null, Material.wood()); 
-				//test.material.asColorMaterial.debugTriangles = true;
-				addChild(test);
-			}
-			
-			bounds.bottom <<= 1;
+			// add a load of falling nape objects...
+			makeFallingObjects();
 		}
 		
+		/**
+		 * convert the embedded bitmap data to a nape body and triangle mesh
+		 */
 		private function doBitmapToPoly():void {
 			
 			const b				:Bitmap 			= new GROUND();
@@ -109,9 +117,16 @@ package mikedotalmond.napoleon.examples {
 			const bitmapToPoly	:BitmapToPolygon	= new BitmapToPolygon(space);
 			const start			:int				= getTimer();
 			
+			// decomposition of an input bitmap into a NapePolygon2D...
+			// alpha-bitmap 		--> polygons (via MarchingSquares in BitmapToPolygon::run)
+			// polygon(s) 		--> convex polygon(s)(via GeomPoly::convex_decomposition)
+			// convex polygon(s)	=== Nape Polygon Shape(s)
+			// convex polygon(s)	--> Nape Body
+			// convex polygon(s)	--> Vertex list (triangles) (via PolyUtils.triangulateConvexPolygon (in PolygonData.fromNapeBodyShapes))
+			
 			bitmapToPoly.run(bd, new Vec2( -bd.width / 2, -bd.height / 2), 64, 4, 2, BodyType.DYNAMIC, Material.sand());
 			
-			const polyData:PolygonData 	= PolygonData.fromBodyShapes(bitmapToPoly.body, bd.width, bd.height);
+			const polyData:PolygonData 	= PolygonData.fromNapeBodyShapes(bitmapToPoly.body, bd.width, bd.height);
 			bitmapPoly 					= new NapePolygon2D(polyData, null, 0xff000000);
 			bitmapPoly.initWithBody(new Vec2(640,560), bitmapToPoly.body);
 			
@@ -123,10 +138,7 @@ package mikedotalmond.napoleon.examples {
 						bitmapToPoly.polyCount + 
 						" polygons and " + 
 						(polyData.triangleVertices.length) + 
-						" triangle vertices");
-						
-			// want to see the triangles?
-			// bitmapPoly.material.asColorMaterial.debugTriangles = true;
+						" triangle vertices.");
 			
 			addChild(bitmapPoly);
 			bitmapToPoly.dispose();
@@ -152,34 +164,75 @@ package mikedotalmond.napoleon.examples {
 			pJoint2.frequency 		= 0.25;
 			pJoint2.space 			= space;
 			
-			jointLine = new QuadLine2D(2);
-			addChild(jointLine);
+			// a QuadLine2D with 2 quads to draw between the joint anchor points
+			jointLines = new QuadLine2D(2);
+			addChild(jointLines);
 		}
 		
+		/**
+		 * 
+		 */
+		private function makeFallingObjects():void {
+			var test:NapePolygon2D;
+			// ... some pentagons
+			bounds.bottom = stage.stageHeight >> 1;
+			var n:int = 256;
+			while (--n) {
+				test = new NapePolygon2D(NapePolygon2D.regularPolygon(10 + Math.random()*20,5), null, 0xffdad03c);
+				test.init(getRandomBoundsPosition(), false, null, Material.steel()); 
+				//test.material.asColorMaterial.debugTriangles = true;
+				addChild(test);
+			}
+			
+			// .. aand some hexagons, why not.
+			n = 128
+			while (--n) {
+				test = new NapePolygon2D(NapePolygon2D.regularPolygon(15 + Math.random()*10,6), null, 0xffa3d0ac);
+				test.init(getRandomBoundsPosition(), false, null, Material.wood()); 
+				//test.material.asColorMaterial.debugTriangles = true;
+				addChild(test);
+			}
+			
+			bounds.bottom <<= 1;
+		}
+		
+		
+		/**
+		 * 
+		 * @param	elapsed
+		 */
 		override protected function step(elapsed:Number):void {
 			super.step(elapsed);
 			
-			jointLine.clear();
-			jointLine.lineStyle(2, 0, 0.5);
+			// redraw the joint lines...
+			jointLines.clear();
+			jointLines.lineStyle(2, 0, 0.5);
 			
 			var d:Vec2 = pJoint1.body1.relativeToWorld(pJoint1.anchor1, true);
-			jointLine.moveTo(d.x, d.y);
+			jointLines.moveTo(d.x, d.y);
 			d = pJoint1.body2.localToWorld(pJoint1.anchor2, true);
-			jointLine.lineTo(d.x, d.y);
+			jointLines.lineTo(d.x, d.y);
 			
 			d = pJoint2.body1.relativeToWorld(pJoint2.anchor1, true);
-			jointLine.moveTo(d.x, d.y);
+			jointLines.moveTo(d.x, d.y);
 			d = pJoint2.body2.localToWorld(pJoint2.anchor2, true);
-			jointLine.lineTo(d.x, d.y);
+			jointLines.lineTo(d.x, d.y);
 			
+			// move the joint pivot point about a bit
 			var w2:Number = _width * 0.5;
-			platformPivot.x = w2 - w2*0.25*Math.sin(count);
-			platformPivot.y = 50 + 50 * Math.cos(count / 0.8);
-			count += 0.005;
+			platformPivot.x = w2 - w2 * 0.25 * Math.sin(theta);
+			platformPivot.y = 75 + 75 * Math.cos(theta / 0.8);
+			theta += 0.005;
 		}
-		private var count:Number = 0.0;
+		private var theta:Number = 0.0;
 		
 		
+		
+		/**
+		 * 
+		 * @param	w
+		 * @param	h
+		 */
 		override public function resize(w:uint, h:uint):void {
 			super.resize(w, h);
 			
@@ -192,6 +245,11 @@ package mikedotalmond.napoleon.examples {
 			bounds.height	= stage.stageHeight + 200;
 		}
 		
+		
+		/**
+		 * 
+		 * @param	node
+		 */
 		override protected function nodeLeavingBounds(node:INapeNode):void {
 			if (bitmapPoly === node) return;
 			node.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
@@ -202,6 +260,10 @@ package mikedotalmond.napoleon.examples {
 			node.body.velocity.y 	= Math.random() * 2;
 		}
 		
+		
+		/**
+		 * 
+		 */
 		override public function dispose():void {
 			
 			super.dispose();
@@ -213,7 +275,7 @@ package mikedotalmond.napoleon.examples {
 			pJoint2.space 	= null;	
 			pJoint2			= null;	
 			bitmapPoly		= null;	
-			jointLine		= null;	
+			jointLines		= null;	
 			platformPivot 	= null;
 		}
 	}

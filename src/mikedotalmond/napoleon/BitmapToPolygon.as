@@ -1,3 +1,25 @@
+/*
+Copyright (c) 2012 Mike Almond - @mikedotalmond - https://github.com/mikedotalmond
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 package mikedotalmond.napoleon {
 	
 	import de.nulldesign.nd2d.display.Polygon2D;
@@ -19,7 +41,8 @@ package mikedotalmond.napoleon {
 	import nape.space.Space;
 	
 	/**
-	 * Based on code from the terrain marching-squares + convex decomposition demo for Nape
+	 * Based on code from the terrain, marching-squares + convex decomposition demo for Nape
+	 * http://deltaluca.me.uk/docnew/
 	 */
 	
 	public final class BitmapToPolygon {
@@ -84,17 +107,20 @@ package mikedotalmond.napoleon {
 			
 			cells.fixed = false;
 			
+			// combine all the shapes (from each cell of the deomposition) into a one body.
+			// (there's probably a better way of doing this, like using a Compound object...
+			// but that didn't seem to work the way I wanted.)
 			var i:int = -1;
 			var n:int = cells.length;
 			var b:Body
 			while (++i < n) {
 				b = cells[i];
-				if (b == null) {
+				if (b == null) { // remove any empty cells
 					cells.splice(i, 1);
 					n--;
 					i--;
 				} else {
-					// re assign all the shapes into a single nape body...
+					// copy all the shapes into a single nape body, offsetting with the current body position
 					b.shapes.foreach(function(p:Shape):void {
 						var p2:Polygon = Shape.copy(p).castPolygon;
 						p2.localVerts.foreach(function(v:Vec2):void {
@@ -108,6 +134,7 @@ package mikedotalmond.napoleon {
 				}
 			}
 			
+			// clean up cells... no longer needed
 			cells.length 	= 0;
 			cells 			= null;
 			body.space		= space;

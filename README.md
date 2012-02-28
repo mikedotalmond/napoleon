@@ -11,7 +11,7 @@ Try out the current build of the napoleon example/test project [here.][12] There
 (ctrl+shift+enter to show/hide the console)
 
 
-The project is still early in development, so things are likely to change and break along the way.
+The project is still early in development, and it's mainly a testbed for experiments and prototypes at the moment, so things are likely to change and break along the way.
 
 ----------
 
@@ -26,6 +26,10 @@ The project is still early in development, so things are likely to change and br
 - de.nulldesign.nd2d.utils.PolyUtils 
 
 #Napoleon
+- mikedotalmond.napoleon.examples.*
+- mikedotalmond.napoleon.forces.PointField
+- mikedotalmond.napoleon.postprocess.PointLight
+- mikedotalmond.napoleon.BitmapToPolygon
 - mikedotalmond.napoleon.INapeNode
 - mikedotalmond.napoleon.NapePolygon2D
 - mikedotalmond.napoleon.NapeQuad2D
@@ -36,7 +40,7 @@ The project is still early in development, so things are likely to change and br
 ----------
 
 #TODO
-- Scene transitions (optional) in NapeWorld2D (setActiveScene)
+- Scene transitions (optional) in NapeWorld2D (setActiveScene) ?
 - More (better) demos / example projects
 - More control over Polygon2D vertices
 - setVertexPosition(s) for (Nape)Polygon2D
@@ -64,8 +68,9 @@ The project is still early in development, so things are likely to change and br
 ----------
 
 
-Delaunay triangulation code - net.nicoptere.delaunay
-- [http://en.nicoptere.net/?p=10][7]
+Triangulation
+- [http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml][13]
+- Ported to actionscript by Zevan Rosser - [http://actionsnippet.com/?p=1462][14]
 
 Convex hull creation in de.nulldesign.nd2d.utils.PolyUtils was derived from some code by bit-101
 - [http://www.bit-101.com/blog/?p=1497][8]
@@ -83,3 +88,5 @@ Convex hull creation in de.nulldesign.nd2d.utils.PolyUtils was derived from some
   [10]: https://github.com/deltaluca/nape
   [11]: http://www.flashdevelop.org/
   [12]: http://mikedotalmond.github.com/napoleon/
+  [13]: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
+  [14]: http://actionsnippet.com/?p=1462
