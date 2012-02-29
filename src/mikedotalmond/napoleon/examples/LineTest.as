@@ -150,19 +150,19 @@ package mikedotalmond.napoleon.examples {
 			line.lineTo(w + Math.cos(theta - Math.PI / 2) * w, h - Math.sin(theta - Math.PI / 2) * h);
 			
 			
-			line.lineStyle(4, 0xff, 1, 0xff00, 0);
+			line.lineStyle(4, 0xff, 1, 0xff00, 1, 0);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta-Math.PI) * w, h - Math.sin(theta-Math.PI/4) * h);
 			
-			line.lineStyle(8, 0, 0.5, 0xffffff, 0.8);
+			line.lineStyle(8, 0, 0.5, 0xffffff, 1, 0.8);
 			line.moveTo(w, h);
 			line.lineTo(w - Math.cos(theta-Math.PI) * w, h + Math.sin(theta-Math.PI/4) * h);
 			
-			line.lineStyle(16, 0xff00, 1, 0, 0, true);
+			line.lineStyle(16, 0xff00, 1, 1, 0, 0, true);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta+Math.PI/2) * w, h - Math.sin(theta+Math.PI*1.4) * h);
 			
-			line.lineStyle(32, 0xff0000, 1, 0, 0);
+			line.lineStyle(32, 0xff0000, 1, 1, 0);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta-Math.PI/2) * w, h - Math.sin(theta-Math.PI*1.4) * h);
 		}
