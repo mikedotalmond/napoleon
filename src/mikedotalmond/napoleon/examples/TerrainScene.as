@@ -126,7 +126,7 @@ package mikedotalmond.napoleon.examples {
 			
 			bitmapToPoly.run(bd, new Vec2( -bd.width / 2, -bd.height / 2), 64, 4, 2, BodyType.DYNAMIC, Material.sand());
 			
-			const polyData:PolygonData 	= PolygonData.fromNapeBodyShapes(bitmapToPoly.body, bd.width, bd.height);
+			const polyData:PolygonData 	= PolygonData.fromNapeBodyShapes(bitmapToPoly.body.shapes, bd.width, bd.height);
 			bitmapPoly 					= new NapePolygon2D(polyData, null, 0xff000000);
 			bitmapPoly.initWithBody(new Vec2(640,560), bitmapToPoly.body);
 			
