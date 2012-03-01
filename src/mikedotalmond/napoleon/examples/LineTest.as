@@ -123,7 +123,7 @@ package mikedotalmond.napoleon.examples {
 			const h:int = _height / 2;
 			
 			line.clear();
-			line.lineStyle(6, 0x6080ff, 0.5);
+			line.lineStyle(12, 0xff80ff, 1, 1, 0xff, 0);
 			line.moveTo(0, h);
 			line.curveThroughPoints(Vector.<Point>([
 				new Point(0, h),
@@ -131,7 +131,7 @@ package mikedotalmond.napoleon.examples {
 				new Point(w + 180 * Math.sin(theta), h + Math.sin(theta) * 256),
 				new Point(stage.stageWidth - 400 - 164 * Math.cos(theta), h - Math.cos(theta) * 256),
 				new Point(stage.stageWidth, h)
-			]), 20);
+			]), 16);
 			
 			line.lineStyle(4, 0xff, 0.5);
 			line.moveTo(w, h);
@@ -150,19 +150,19 @@ package mikedotalmond.napoleon.examples {
 			line.lineTo(w + Math.cos(theta - Math.PI / 2) * w, h - Math.sin(theta - Math.PI / 2) * h);
 			
 			
-			line.lineStyle(4, 0xff, 1, 0xff00, 1, 0);
+			line.lineStyle(4, 0xff, 1, 1, 0xffff, 0);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta-Math.PI) * w, h - Math.sin(theta-Math.PI/4) * h);
 			
-			line.lineStyle(8, 0, 0.5, 0xffffff, 1, 0.8);
+			line.lineStyle(8, 0x333333, 0.5, 1, 0xffffff, 0.8);
 			line.moveTo(w, h);
 			line.lineTo(w - Math.cos(theta-Math.PI) * w, h + Math.sin(theta-Math.PI/4) * h);
 			
-			line.lineStyle(16, 0xff00, 1, 1, 0, 0, true);
+			line.lineStyle(16, 0xff00, 0.5, 16, 0, 0, true);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta+Math.PI/2) * w, h - Math.sin(theta+Math.PI*1.4) * h);
 			
-			line.lineStyle(32, 0xff0000, 1, 1, 0);
+			line.lineStyle(32, 0xff0000, 0, 8, 0, 1, true);
 			line.moveTo(w, h);
 			line.lineTo(w + Math.cos(theta-Math.PI/2) * w, h - Math.sin(theta-Math.PI*1.4) * h);
 		}
