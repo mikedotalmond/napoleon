@@ -46,6 +46,7 @@ package mikedotalmond.napoleon {
 		 */
 		public function NapeQuad2D(pWidth:Number=1, pHeight:Number=1) {
 			super(pWidth, pHeight);
+			mouseEnabled = false;
 		}
 		
 		/**

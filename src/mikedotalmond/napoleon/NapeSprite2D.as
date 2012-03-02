@@ -54,6 +54,7 @@ package mikedotalmond.napoleon {
 		 */
 		public function NapeSprite2D(textureObject:Texture2D=null) {
 			super(textureObject);
+			mouseEnabled = false;			
 		}
 		
 		/**

@@ -89,6 +89,7 @@ package mikedotalmond.napoleon {
 		 */
 		public function NapePolygon2D(polygonData:PolygonData, textureObject:Texture2D = null, colour:uint=0){
 			super(polygonData, textureObject, colour);
+			mouseEnabled = false;
 		}
 		
 		/**
