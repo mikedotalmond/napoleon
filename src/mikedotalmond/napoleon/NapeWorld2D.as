@@ -59,6 +59,8 @@ package mikedotalmond.napoleon {
 		static public const Logger			:ILogger			= Logging.getLogger(NapeWorld2D);
 		static public const VERSION			:String 			= Version.Major + "." + Version.Minor + "." + Version.Build + "." + Version.Revision;
 		
+		private var _fullscreen				:Boolean			= false;
+		
 		protected var lastDelta				:Number 			= 1 / 60;
 		protected var inputPollInterval		:Number 			= 1 / 25;
 		
@@ -280,11 +282,7 @@ package mikedotalmond.napoleon {
 		 * @param	e
 		 */
 		protected function toggleFullscreen(e:Event = null):void {
-			try {
-				stage.displayState = (stage.displayState == StageDisplayState.FULL_SCREEN) ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
-			} catch (err:Error) {
-				Logger.error(err); // allowFullscreen not set?
-			}
+			fullscreen = !fullscreen;
 		}
 		
 		
@@ -345,6 +343,17 @@ package mikedotalmond.napoleon {
 		override protected function resizeStage(e:Event = null):void {
 			super.resizeStage(e);
 			if(napeScene) napeScene.resize(stage.stageWidth, stage.stageHeight);
+		}
+		
+		public function get fullscreen():Boolean { return _fullscreen; }
+		public function set fullscreen(value:Boolean):void {
+			try {
+				_fullscreen 		= value;
+				stage.displayState 	= _fullscreen ? StageDisplayState.FULL_SCREEN : StageDisplayState.NORMAL;
+			} catch (err:Error) {
+				_fullscreen = false;
+				Logger.error(err); // allowFullscreen not set?
+			}
 		}
 	}
 }
