@@ -21,6 +21,7 @@ THE SOFTWARE.
 */
 package mikedotalmond.napoleon {
 	
+	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Quad2D;
 	import de.nulldesign.nd2d.geom.Vertex;
 	import de.nulldesign.nd2d.materials.Quad2DColorMaterial;
@@ -71,14 +72,16 @@ package mikedotalmond.napoleon {
 			x = position.x;
 			y = position.y;
 			rotation = 0;
-			
+			_body.userData = this;
 			return _body;
 		}
 		
-		override public function copy():Quad2D {
+		override public function copy():Node2D {
 			var q:NapeQuad2D 	= new NapeQuad2D(_width, _height);
 			q.material			= new Quad2DColorMaterial();
+			q.init(Vec2.weak(), null, body.type, body.shapes.at(0).material);
 			q.copyPropertiesOf(this);
+			q.mouseEnabled = mouseEnabled;
 			return q;
 		}
 		
@@ -93,7 +96,7 @@ package mikedotalmond.napoleon {
 		override protected function step(elapsed:Number):void {
 			x 			= _body.position.x;
 			y 			= _body.position.y;
-			rotation	= _body.rotation * _180Pi;
+			if(body.allowRotation) rotation	= _body.rotation * _180Pi;
 		}
 		
 		override public function dispose():void {
@@ -103,6 +106,22 @@ package mikedotalmond.napoleon {
 				_body 		= null;
 			}
 			super.dispose();
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function setBodyNull():void {
+			_body = null;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function scale(x:Number, y:Number):void {
+			scaleX = x; scaleY = y;
+			if (_body) _body.scaleShapes(x, y);
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function copyAsINapeNode():INapeNode {
+			return copy() as INapeNode;
 		}
 		
 		override public function set x(value:Number):void {
@@ -117,12 +136,12 @@ package mikedotalmond.napoleon {
 		
 		override public function set rotation(value:Number):void {
 			super.rotation = value;
-			if (_body) _body.rotation = value / _180Pi;
+			if(!_body.type==BodyType.STATIC) _body.rotation = value / _180Pi;
 		} 
 		
 		private var _body:Body;
 		public function get body():Body { return _body; }
 		
-		private static const _180Pi:Number = 180 / Math.PI;		
+		private static const _180Pi:Number = 180 / Math.PI;	
 	}
 }

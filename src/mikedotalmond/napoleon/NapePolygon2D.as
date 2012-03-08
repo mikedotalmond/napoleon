@@ -21,9 +21,12 @@ THE SOFTWARE.
 */
 package mikedotalmond.napoleon {
 	
+	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
 	import de.nulldesign.nd2d.geom.Vertex;
+	import de.nulldesign.nd2d.materials.Polygon2DColorMaterial;
+	import nape.shape.Shape;
 	
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
 	
@@ -108,15 +111,16 @@ package mikedotalmond.napoleon {
 			_body.shapes.add(isCircle ? new Circle(polygonData.bounds.width / 2) : polyFromHull(polygonData.polygonVertices));
 			if(physMaterial) _body.setShapeMaterials(physMaterial);
 			
+			_body.userData = this;
 			return _body;
 		}
 		
-		
 		public function initWithBody(position:Vec2, body:Body):void {
-			_body 		= body;
-			x 			= position.x;
-			y 			= position.y;
-			rotation 	= 0;
+			_body 			= body;
+			_body.userData 	= this;
+			x 				= position.x;
+			y 				= position.y;
+			rotation 		= 0;
 		}
 		
 		
@@ -129,33 +133,71 @@ package mikedotalmond.napoleon {
 		override public function dispose():void {
 			if (_body) {
 				_body.clear();
+				_body.userData = null;
 				_body.space = null;
 				_body 		= null;
 			}
 			super.dispose();
 		}
 		
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function copy():Node2D {
+			
+			//var textureObject	:Texture2D 		= texture == null ? null : texture
+			var textureObject	:Texture2D 		= texture == null ? null : Texture2D.textureFromBitmapData(texture.bitmap, true);
+			var colour			:uint 			= textureObject == null ? (material as Polygon2DColorMaterial).color : 0xff000000;
+			var node			:NapePolygon2D 	= new NapePolygon2D(polygonData, textureObject, colour);
+			var bodyClone		:Body 			= _body.copy();
+			
+			node.initWithBody(Vec2.weak(), bodyClone);
+			node._isCircle 		= _isCircle;
+			node.mouseEnabled 	= mouseEnabled;
+			
+			return node;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function copyAsINapeNode():INapeNode {
+			return copy() as INapeNode;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function scale(x:Number, y:Number):void {
+			scaleX = x; scaleY = y;
+			if (_body) _body.scaleShapes(x, y);
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function setBodyNull():void {
+			_body = null;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		override public function set x(value:Number):void {
 			if (_body) _body.position.x = value;
 			super.x = value;
 		}
 		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		override public function set y(value:Number):void {
 			if (_body) _body.position.y = value;
 			super.y = value;
 		}
 		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		override public function set rotation(value:Number):void {
 			super.rotation = value;
 			if (_body) _body.rotation = value / _180Pi;
 		}
 		
-		private var _body					:Body;
-		public function get body()			:Body { return _body; }
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		private var _body								:Body;
+		public function get body()						:Body { return _body; }
 		
-		private var _isCircle				:Boolean;
-		public function get isCircle()		:Boolean { return _isCircle; }
+		internal var _isCircle							:Boolean;
+		public function get isCircle()					:Boolean { return _isCircle; }
 		
-		private static const _180Pi			:Number = 180 / Math.PI;
+		private static const _180Pi						:Number = 180 / Math.PI;
 	}
 }

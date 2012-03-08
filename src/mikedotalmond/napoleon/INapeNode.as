@@ -34,9 +34,15 @@ package mikedotalmond.napoleon {
 	 */
 	
 	import nape.phys.Body;
+	import de.nulldesign.nd2d.display.Node2D;
 	
 	public interface INapeNode {
+		
+		function copy():Node2D;
+		function copyAsINapeNode():INapeNode;
+		
 		function get body():Body; // the Nape pyhsics body
+		function setBodyNull():void; // clears the associated body - but does not remove it from the nape space
 		
 		// these are here to make sure the physics body properties get updated too - means you have to override these public functions of Node2D in your implementation
 		function get visible():Boolean;
@@ -46,7 +52,8 @@ package mikedotalmond.napoleon {
 		function set y(value:Number):void;
 		function set rotation(value:Number):void;
 		
-		// NapeScene2D needs to be able to clean up
+		function scale(x:Number, y:Number):void;
+		
 		function dispose():void;
 	}
 }

@@ -23,6 +23,9 @@ package mikedotalmond.napoleon {
 	
 	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Scene2D;
+	import nape.phys.Body;
+	import nape.phys.BodyType;
+	import nape.shape.Polygon;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -76,6 +79,8 @@ package mikedotalmond.napoleon {
 		public var velocityIterations	:uint 				= 10;
 		public var positionIterations	:uint 				= 10;
 		
+		protected var border			:Body;
+		
 		/**
 		 *  Construct a new NapeScene2D, optionally proviiding a bounding rectangle for the nodeLeavingBounds
 		 */
@@ -89,7 +94,15 @@ package mikedotalmond.napoleon {
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			resize(stage.stageWidth, stage.stageHeight);
 			mouseWheelZoom = _mouseWheelZoom;
-			//addChild(container);
+		}
+		
+		protected function createStageBorderBody():void {
+			border = new Body(BodyType.STATIC);
+			border.shapes.add(new Polygon(Polygon.rect(0, 0, -50, stage.stageHeight)));
+			border.shapes.add(new Polygon(Polygon.rect(stage.stageWidth, 0, 50, stage.stageHeight)));
+			border.shapes.add(new Polygon(Polygon.rect(0, 0, stage.stageWidth, -50)));
+			border.shapes.add(new Polygon(Polygon.rect(0, stage.stageHeight, stage.stageWidth, 50)));
+			border.space = space;
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -163,7 +176,13 @@ package mikedotalmond.napoleon {
 			camera.x = camera.y = 0;
 			camera.zoom = 1;
 			
+			if (border != null) {
+				border.space = null;
+				border = null;
+			}
+			
 			super.dispose();
+			
 			if (parent) parent.removeChild(this);
 			
 			container = null;

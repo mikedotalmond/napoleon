@@ -21,6 +21,7 @@ THE SOFTWARE.
 */
 package mikedotalmond.napoleon {
 	
+	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Sprite2D;
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
 	import flash.events.Event;
@@ -82,7 +83,7 @@ package mikedotalmond.napoleon {
 			x = position.x;
 			y = position.y;
 			rotation = 0;
-			
+			_body.userData = this;
 			return _body;
 		}
 		
@@ -101,16 +102,47 @@ package mikedotalmond.napoleon {
 			super.dispose();
 		}
 		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function clone():INapeNode {
+			return null;
+		}
+		
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function scale(x:Number, y:Number):void {
+			scaleX = x;
+			scaleY = y;
+			if (_body) _body.scaleShapes(x, y);
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function copy():Node2D {
+			return null;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function copyAsINapeNode():INapeNode {
+			return copy() as INapeNode;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
+		public function setBodyNull():void {
+			_body = null;
+		}
+		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		override public function set x(value:Number):void {
 			if (_body) _body.position.x = value;
 			super.x = value;
 		}
 		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		override public function set y(value:Number):void {
 			if (_body) _body.position.y = value;
 			super.y = value;
 		}
 		
+		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		override public function set rotation(value:Number):void {
 			super.rotation = value;
 			if (_body) _body.rotation = value / _180Pi;
