@@ -121,10 +121,14 @@ package mikedotalmond.napoleon.constraints.portal {
 				object = null;
 			} else {
 				if (object == limbo.mBody) {
+					//node 		= limbo.sBody.userData as INapeNode;
 					limbo.sBody = null;
 				} else {
+					//node 		= limbo.mBody.userData as INapeNode;
 					limbo.mBody = null;
 				}
+				//node.setBodyNull();
+				//scene.removeChild(node as Node2D);
 			}
 			
 			delfromLimbo(info.limbos, limbo);	
@@ -136,13 +140,12 @@ package mikedotalmond.napoleon.constraints.portal {
 				if (info.master.shapes.length == 0) {
 					info.master.space = null;
 					node = info.master.userData as INapeNode;
-					scene.removeChild(node as Node2D);
-					node = null;
 				} else {
 					info.slave.space = null;
 					node = info.slave.userData as INapeNode;
-					scene.removeChild(node as Node2D);
 				}
+				scene.removeChild(node as Node2D);
+				node = null;
 				delfrom(infos, info);
 			}
 		}
@@ -162,7 +165,7 @@ package mikedotalmond.napoleon.constraints.portal {
 			}
 			
 			var nortal		:Portal = portal.target;
-			var scale		:Number = nortal.width / portal.width;
+			var scale		:Number = 1;// nortal.width / portal.width;
 			var node		:INapeNode;
 			var clone		:INapeNode;
 			var cloneBody	:Body;
@@ -171,7 +174,7 @@ package mikedotalmond.napoleon.constraints.portal {
 				//node  		= object.userData is INapeNode ? (object.userData as INapeNode) : (object.userData as Portal).node;
 				node  		= object.userData as INapeNode;
 				clone 		= node.copyAsINapeNode();
-				clone.scale(scale, scale);
+				//clone.scale(scale, scale); // not quite working properly...
 				cloneBody 	= clone.body;
 				scene.addChild(clone as Node2D);
 				

@@ -73,7 +73,7 @@ package mikedotalmond.napoleon.examples {
 			p2.node.body.type = BodyType.KINEMATIC;
 			p2.node.body.angularVel = 1;
 			/*
-			//funky portal body now :)
+			//funky portal body now :) ... many things wrong with this part of the port - and it breaks pretty easily
 			node = new NapeQuad2D(84, 100);
 			(node as NapeQuad2D).init(new Vec2(300, 225), null, BodyType.DYNAMIC);
 			(node as NapeQuad2D).body.cbType = PortalManager.OBJECT;
