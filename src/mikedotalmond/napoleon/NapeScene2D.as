@@ -23,6 +23,7 @@ package mikedotalmond.napoleon {
 	
 	import de.nulldesign.nd2d.display.Node2D;
 	import de.nulldesign.nd2d.display.Scene2D;
+	import nape.constraint.PivotJoint;
 	import nape.phys.Body;
 	import nape.phys.BodyType;
 	import nape.shape.Polygon;
@@ -74,12 +75,13 @@ package mikedotalmond.napoleon {
 		
 		public var spacePaused			:Boolean			= false;
 		public var space				:Space				= new Space();
-        public var container			:NapeContainer2D 	= new NapeContainer2D(space);
 		
 		public var velocityIterations	:uint 				= 10;
 		public var positionIterations	:uint 				= 10;
 		
 		protected var border			:Body;
+		protected var hand				:PivotJoint;
+		
 		
 		/**
 		 *  Construct a new NapeScene2D, optionally proviiding a bounding rectangle for the nodeLeavingBounds
@@ -105,11 +107,50 @@ package mikedotalmond.napoleon {
 			border.space = space;
 		}
 		
+		/**
+		 * want to grab nape objects? ok
+		 */
+		protected function addSceneMouseJoint():void {
+			if (hand != null) return;
+			hand = new PivotJoint(space.world, null, new Vec2(), new Vec2());
+			hand.active = false;
+			hand.stiff = false;
+			hand.space = space;
+			hand.maxForce = 1000;
+			addEventListener(MouseEvent.MOUSE_DOWN, onMouseJointDown, false, 0, true);
+			addEventListener(MouseEvent.MOUSE_UP, onMouseJointUp, false, 0, true);			
+		}
+		
+		protected function removeSceneMouseJoint():void {
+			if (hand == null) return;
+			hand.active = false;
+			hand.space 	= null;
+			hand 		= null;
+			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseJointDown);
+			removeEventListener(MouseEvent.MOUSE_UP, onMouseJointUp);		
+		}
+		
+		protected function onMouseJointUp(e:MouseEvent):void { hand.active = false; }
+		
+		protected function onMouseJointDown(e:MouseEvent):void {
+			var mp:Vec2 = new Vec2(stage.mouseX, stage.mouseY);
+			space.bodiesUnderPoint(mp).foreach(function(b:Body):void {
+				if(b.isDynamic()) {
+					hand.body2 		= b;
+					hand.anchor2 	= b.worldToLocal(mp);
+					hand.active 	= true;
+				}
+			});
+		}
+		
 		override protected function step(elapsed:Number):void {
 			
 			if (!spacePaused) {
-				// step through the physics simulation...
-				space.step(1.0 / (elapsed * 1000), velocityIterations, positionIterations);
+				
+				if (hand) {
+					if(hand.active && hand.body2.space == null) { hand.body2 = null; hand.active = false; }
+					hand.anchor1.setxy(mouseX, mouseY);
+				}
 				
 				const b:Rectangle = _bounds;
 				
@@ -121,6 +162,9 @@ package mikedotalmond.napoleon {
 						if (nd && nd.visible && (nd.x < b.left || nd.x > b.right || nd.y < b.top || nd.y > b.bottom)) nodeLeavingBounds(nd);
 					}
 				}
+				
+				// step through the physics simulation...
+				space.step(1.0 / (elapsed * 1000), velocityIterations, positionIterations);
 			}
 		}
 		
@@ -140,6 +184,16 @@ package mikedotalmond.napoleon {
 			// override as required...
 			_width  = w;
 			_height = h;
+			
+			if (border) {
+				border.space = null;
+				border.clear();
+				border.shapes.add(new Polygon(Polygon.rect(0, 0, -50, h)));
+				border.shapes.add(new Polygon(Polygon.rect(w, 0, 50, h)));
+				border.shapes.add(new Polygon(Polygon.rect(0, 0, w, -50)));
+				border.shapes.add(new Polygon(Polygon.rect(0, h, w, 50)));
+				border.space = space;
+			}
 		}
 		
 		public function onControllerUpdate():void {
@@ -167,6 +221,7 @@ package mikedotalmond.napoleon {
 		}
 		
 		override public function dispose():void {
+			removeSceneMouseJoint();
 			
 			_bounds = null;
 			mouseWheelZoom = false;
@@ -184,8 +239,6 @@ package mikedotalmond.napoleon {
 			super.dispose();
 			
 			if (parent) parent.removeChild(this);
-			
-			container = null;
 			
 			space.clear();
 			space = null;

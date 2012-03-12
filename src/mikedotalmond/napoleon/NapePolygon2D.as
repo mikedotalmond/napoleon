@@ -132,10 +132,10 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			if (_body) {
+				_body.space 	= null;
+				_body.userData 	= null;
 				_body.clear();
-				_body.userData = null;
-				_body.space = null;
-				_body 		= null;
+				_body 			= null;
 			}
 			super.dispose();
 		}
@@ -144,14 +144,15 @@ package mikedotalmond.napoleon {
 		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		public function copy():Node2D {
 			
-			//var textureObject	:Texture2D 		= texture == null ? null : texture
-			var textureObject	:Texture2D 		= texture == null ? null : Texture2D.textureFromBitmapData(texture.bitmap, true);
+			var textureObject	:Texture2D 		= texture == null ? null : texture
 			var colour			:uint 			= textureObject == null ? (material as Polygon2DColorMaterial).color : 0xff000000;
 			var node			:NapePolygon2D 	= new NapePolygon2D(polygonData, textureObject, colour);
 			var bodyClone		:Body 			= _body.copy();
 			
 			node.initWithBody(Vec2.weak(), bodyClone);
 			node._isCircle 		= _isCircle;
+			node._scaleX 		= _scaleX;
+			node._scaleY 		= _scaleY;
 			node.mouseEnabled 	= mouseEnabled;
 			
 			return node;
@@ -164,7 +165,9 @@ package mikedotalmond.napoleon {
 		
 		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		public function scale(x:Number, y:Number):void {
-			scaleX = x; scaleY = y;
+			_scaleX 			*= x;
+			_scaleY 			*= y;
+			invalidateMatrix 	= true;
 			if (_body) _body.scaleShapes(x, y);
 		}
 		

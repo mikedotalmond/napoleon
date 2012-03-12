@@ -66,11 +66,6 @@ package mikedotalmond.napoleon.examples {
 		
 		public function TerrainScene() {
 			super();
-			Logger.info("Testing decomposition of a bitmap with alpha channel into a series of convex Nape polygons, a Nape object, and a Polygon2D mesh");
-			Logger.info("Also testing out the nape LineJoint, with QuadLine2D to draw lines between the anchors");
-			Logger.info("Use 'debugTriangles' to see the triangles in the main mesh");
-			
-			DConsole.createCommand("debugTriangles", toggleDebugTriangles, null, "toggle a debug-draw mode on the main mesh so you can see the triangles")
 		}
 		
 		private function toggleDebugTriangles():void {
@@ -86,6 +81,12 @@ package mikedotalmond.napoleon.examples {
 		
 		override protected function onAddedToStage(e:Event):void {
 			super.onAddedToStage(e);
+			
+			Logger.info("Testing decomposition of a bitmap with alpha channel into a series of convex Nape polygons, a Nape object, and a Polygon2D mesh");
+			Logger.info("Also testing out the nape LineJoint, with QuadLine2D to draw lines between the anchors");
+			Logger.info("Use 'debugTriangles' to see the triangles in the main mesh");
+			
+			DConsole.createCommand("debugTriangles", toggleDebugTriangles, null, "toggle a debug-draw mode on the main mesh so you can see the triangles");
 			
 			space.gravity 		= new Vec2(0, 32);
 			positionIterations 	= velocityIterations = 6;
@@ -266,8 +267,6 @@ package mikedotalmond.napoleon.examples {
 		 */
 		override public function dispose():void {
 			
-			super.dispose();
-			
 			DConsole.removeCommand("debugTriangles");
 			
 			pJoint1.space 	= null;	
@@ -277,6 +276,9 @@ package mikedotalmond.napoleon.examples {
 			bitmapPoly		= null;	
 			jointLines		= null;	
 			platformPivot 	= null;
+			
+			super.dispose();
+			
 		}
 	}
 }

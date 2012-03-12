@@ -38,7 +38,6 @@ package mikedotalmond.napoleon {
 	
 	public interface INapeNode {
 		
-		function copy():Node2D;
 		function copyAsINapeNode():INapeNode;
 		
 		function get body():Body; // the Nape pyhsics body
@@ -51,9 +50,8 @@ package mikedotalmond.napoleon {
 		function set x(value:Number):void;
 		function set y(value:Number):void;
 		function set rotation(value:Number):void;
+		function scale(x:Number, y:Number):void; //scale the node and associated nape body (mulplicative)
 		
-		function scale(x:Number, y:Number):void;
-		
-		function dispose():void;
+		function dispose():void; // clean up
 	}
 }

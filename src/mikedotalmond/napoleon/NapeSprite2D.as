@@ -43,7 +43,6 @@ package mikedotalmond.napoleon {
 		private static const _180Pi				:Number = 180 / Math.PI;
 		public static const BODY_SHAPE_CIRCLE	:uint = 0;
 		public static const BODY_SHAPE_BOX		:uint = 1;
-		//public static const BODY_SHAPE_POLY	:uint = 2; //TODO:implement polygon shapes for NapeSprite2D
 		
 		private var _body:Body;
 		public function get body():Body { return _body; }
@@ -68,23 +67,33 @@ package mikedotalmond.napoleon {
 		 */
 		public function init(position:Vec2, bodyType:BodyType = null, shapeType:uint = NapeSprite2D.BODY_SHAPE_BOX, physMaterial:Material = null):Body {
 			
-			_body = new Body(bodyType == null ? BodyType.DYNAMIC : bodyType);
+			var b:Body = new Body(bodyType == null ? BodyType.DYNAMIC : bodyType);
 			
 			switch(shapeType) {
 				case BODY_SHAPE_CIRCLE:
-					_body.shapes.add(new Circle(Math.max(width, height) / 2, null, physMaterial));
+					b.shapes.add(new Circle(Math.max(width, height) / 2, null, physMaterial));
 					break;
 					
 				case BODY_SHAPE_BOX:
-					_body.shapes.add(new Polygon(Polygon.box(width, height), physMaterial));
+					b.shapes.add(new Polygon(Polygon.box(width, height), physMaterial));
 					break;
 			}
 			
+			initWithBody(position, b);
+			return _body;
+		}
+		
+		/**
+		 * 
+		 * @param	body
+		 * @param	position
+		 */
+		public function initWithBody(position:Vec2, body:Body):void {
+			_body = body;
 			x = position.x;
 			y = position.y;
 			rotation = 0;
 			_body.userData = this;
-			return _body;
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -95,8 +104,8 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			if (_body) {
-				_body.clear();
 				_body.space = null;
+				_body.clear();
 				_body 		= null;
 			}
 			super.dispose();
@@ -104,14 +113,18 @@ package mikedotalmond.napoleon {
 		
 		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		public function clone():INapeNode {
-			return null;
+			var node:NapeSprite2D = new NapeSprite2D(texture);
+			node.initWithBody(Vec2.weak(), _body.copy());			
+			node._scaleX = _scaleX;
+			node._scaleY = _scaleY;
+			return node;
 		}
-		
 		
 		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		public function scale(x:Number, y:Number):void {
-			scaleX = x;
-			scaleY = y;
+			_scaleX 			*= x;
+			_scaleY 			*= y;
+			invalidateMatrix 	= true;
 			if (_body) _body.scaleShapes(x, y);
 		}
 		

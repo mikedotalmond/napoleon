@@ -1,4 +1,4 @@
-package mikedotalmond.napoleon.constraints {
+package mikedotalmond.napoleon.constraints.portal {
 	
 	/*
 		Constraint for use in portal physics.

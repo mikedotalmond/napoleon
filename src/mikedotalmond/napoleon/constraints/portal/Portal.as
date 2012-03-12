@@ -1,9 +1,11 @@
 package mikedotalmond.napoleon.constraints.portal {
 
+	import flash.geom.Rectangle;
 	import mikedotalmond.napoleon.INapeNode;
 	import nape.dynamics.InteractionFilter;
 	import nape.geom.Vec2;
 	import nape.phys.Body;
+	import nape.shape.Polygon;
 	import nape.shape.Shape;
 
 	final public class Portal {
@@ -15,19 +17,25 @@ package mikedotalmond.napoleon.constraints.portal {
 		public var position :Vec2;
 		public var direction:Vec2;
 
-		//linked portal
+		// linked portal
 		public var target	:Portal;
 		public var width	:Number;
 		
-		public function Portal(node:INapeNode, position:Vec2, direction:Vec2, width:Number) {
+		public function Portal(node:INapeNode, direction:Vec2, width:Number, height:Number) {
 			this.node 		= node;
 			this.body 		= node.body;
-			this.position 	= position;
+			this.position 	= body.localCOM.add(new Vec2(width / 2.1, 0))
 			this.direction 	= direction;
-			this.width 		= width;
-			node.body.cbType = PortalManager.PORTAL;
-			node.body.setShapeFilters(new InteractionFilter(-1,-1,-1,-1,-1,-1));
+			this.width 		= height;
+			node.body.shapes.foreach(function(s:Shape):void {
+				s.cbType = PortalManager.PORTAL;
+				s.filter = new InteractionFilter( -1, -1, -1, -1, -1, -1);
+			});
+			
 			node.body.userData = this;
+			//body.shapes.add(new Polygon(Polygon.rect( -width / 2, -height / 2, width, -width), null, null, PortalManager.OBJECT));
+			//body.shapes.add(new Polygon(Polygon.rect( -width / 2, height / 2, width, width), null, null, PortalManager.OBJECT));
+			//body.shapes.add(new Polygon(Polygon.rect( -width / 2, -height / 2 - width, -width, height + width * 2), null, null, PortalManager.OBJECT));
 		}
 	}
 }

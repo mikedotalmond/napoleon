@@ -86,10 +86,8 @@ package mikedotalmond.napoleon {
 		}
 		
 		override public function setVertexPositions(v1:Vector3D, v2:Vector3D, v3:Vector3D, v4:Vector3D):void {
-			// update body poly shape if it already exists
-			if (_body.shapes.length == 1) _body.shapes.remove(_body.shapes.at(0));
+			_body.shapes.clear();
 			_body.shapes.add(new Polygon([new Vec2(v1.x, v1.y), new Vec2(v2.x, v2.y), new Vec2(v3.x, v3.y), new Vec2(v4.x, v4.y)]));
-			
 			super.setVertexPositions(v1, v2, v3, v4);			
 		}		
 		
@@ -101,8 +99,8 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			if (_body) {
-				_body.clear();
 				_body.space = null;
+				_body.clear();
 				_body 		= null;
 			}
 			super.dispose();
@@ -115,7 +113,9 @@ package mikedotalmond.napoleon {
 		
 		/* INTERFACE mikedotalmond.napoleon.INapeNode */
 		public function scale(x:Number, y:Number):void {
-			scaleX = x; scaleY = y;
+			_scaleX 			*= x;
+			_scaleY 			*= y;
+			invalidateMatrix 	= true;
 			if (_body) _body.scaleShapes(x, y);
 		}
 		

@@ -65,10 +65,6 @@ package mikedotalmond.napoleon.examples {
 		public function TestScene2D() {
 			super();
 			Logger.info("Testing Nape + ND2D set-up and performance (NapeScene2D, NapeSprite2D, NapeQuad2D)");
-			
-			DConsole.createCommand("toggleWaterVisible", function():void {
-				if (water) water.visible = !water.visible;
-			});
 		}
 		
 		/**
@@ -77,6 +73,10 @@ package mikedotalmond.napoleon.examples {
 		 */
 		override protected function onAddedToStage(e:Event):void {
 			super.onAddedToStage(e);
+			
+			DConsole.createCommand("toggleWaterVisible", function():void {
+				if (water) water.visible = !water.visible;
+			});
 			
 			space.gravity 		= new Vec2(0, 38);
 			positionIterations 	= velocityIterations = 12;
@@ -89,29 +89,15 @@ package mikedotalmond.napoleon.examples {
 			
 			// create random size/position NapeSprite2Ds (with simple textures), and a few NapeQuad2Ds too
 			
-			var test	:NapeSprite2D;
-			var quadTest:NapeQuad2D;
-			var n		:int = 380;
+			var test	:NapeQuad2D;
+			var n		:int = 320;
 			
 			while (--n) { 
-				test = new NapeSprite2D(Texture2D.textureFromBitmapData(new BitmapData(22 + int(24 * Math.random()), 22 + int(24 * Math.random()), false, Math.random() * 0xffff0000)));
-				test.init(new Vec2(50 + (stage.stageWidth - 20) * Math.random(), 20 + (stage.stageHeight - 60) * Math.random()), null, NapeSprite2D.BODY_SHAPE_BOX, Material.wood());
+				test = new NapeQuad2D(22 + int(24 * Math.random()), 22 + int(24 * Math.random()))
+				test.flatColor(Math.random() * 0xff0000, 1);
+				test.init(getRandomBoundsPosition(), null, BodyType.DYNAMIC, Material.wood());
 				test.body.rotation = Math.random() * Math.PI * 2;		
 				addChild(test);
-				
-				if (n % 24 == 0) { // add a few random quads too
-					quadTest = new NapeQuad2D();
-					quadTest.init(
-						new Vec2(50 + (stage.stageWidth - 25) * Math.random(), 25 + (stage.stageHeight - 50) * Math.random()),
-						Vector.<Vector3D>([
-							new Vector3D( -10 -100 * Math.random(), -10 -100 * Math.random()) ,	new Vector3D(10 + 100 * Math.random(), -10 -100 * Math.random()) , 
-							new Vector3D(10 + 100 * Math.random(), 10 + 100 * Math.random()),	new Vector3D( -10 - 100 * Math.random(), 10 + 100 * Math.random())
-						]),
-						null, 
-						Material.rubber()
-					);
-					addChild(quadTest);
-				}
 			}
 			
 			// the ground - BodyType.KINEMATIC so it can be animated
@@ -127,6 +113,8 @@ package mikedotalmond.napoleon.examples {
 			water.blendMode = BlendModePresets.FILTER;
 			water.alpha = 0.9;
 			addChild(water);
+			
+			resize(_width, _height);
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -152,19 +140,9 @@ package mikedotalmond.napoleon.examples {
 			
 			// reset positions along the top of the stage
 			node.body.velocity.x 	= node.body.velocity.y = 0;
-			node.body.position.x 	= stage.stageWidth * 0.1 + Math.random() * stage.stageWidth * 0.8;
+			node.body.position.x 	= _width * 0.5 + (Math.random()-0.5) * _width * 0.8;
 			node.body.position.y 	= bounds.y + Math.random() * 50;
-			node.body.rotation 	= Math.random() * 6.28;
-			
-			// it's a quad? give it some new vertex positions...
-			if (node is NapeQuad2D) {
-				(node as NapeQuad2D).setVertexPositions( //set some random positions (this occasionally makes concave surfaces that aren't supported by the physics...)
-					new Vector3D( -10 -80 * Math.random(), -10 -80 * Math.random()), 
-					new Vector3D(10+80 * Math.random(),-10 -80 * Math.random()), 
-					new Vector3D(10+80* Math.random(), 10+80 * Math.random()), 
-					new Vector3D( -10-80* Math.random(), 10+80* Math.random())
-				);
-			}
+			node.body.rotation 		= Math.random() * 6.28;
 		}
 		
 		override public function resize(w:uint, h:uint):void {
@@ -174,10 +152,11 @@ package mikedotalmond.napoleon.examples {
 		}
 		
 		override public function dispose():void {
-			super.dispose();
 			DConsole.removeCommand("toggleWaterVisible");
+			super.dispose();
 			floor = null;
 			water = null;
 		}
+			
 	}
 }

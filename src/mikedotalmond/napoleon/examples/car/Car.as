@@ -208,16 +208,21 @@ package mikedotalmond.napoleon.examples.car {
 		
 		public function dispose():void {
 			
-			shell.dispose();
-			tyreSmoke.dispose();
-			skidmarks.dispose();
-			
-			_wheels 		= null;
+			_wheelJoints.forEach(function(w:WheelJoint, index:int, vector:Vector.<WheelJoint>):void { w.dispose(); } );
 			_wheelJoints = null;
+			
+			shell.dispose();
+			shell = null;
+			tyreSmoke.dispose();
+			tyreSmoke = null;
+			skidmarks.dispose();
+			skidmarks = null;
+			
+			_wheels 	= null;
 			skidWeights	= null;
 			tyreSmoke 	= null;
 			skidmarks 	= null;
-			properties 		= null;
+			properties 	= null;
 		}
 		
 		/**
@@ -289,10 +294,9 @@ internal final class WheelJoint {
 	}
 	
 	public function dispose():void {
-		body 		= null;
-		
 		pivot.space = null;
 		pivot 		= null;
+		
 		angle.space = null;
 		angle 		= null;
 		
@@ -300,5 +304,8 @@ internal final class WheelJoint {
 			motor.space = null;
 			motor 		= null;
 		}
+		
+		body.space	= null;
+		body 		= null;
 	}
 }

@@ -165,6 +165,8 @@ package mikedotalmond.napoleon.examples {
 			floor = new NapeSprite2D(Texture2D.textureFromBitmapData(new BitmapData(stage.stage.fullScreenWidth, 64, false, 0xffff0000)))
 			floor.init(new Vec2(stage.stageWidth >> 1, stage.stageHeight), BodyType.KINEMATIC, NapeSprite2D.BODY_SHAPE_BOX, Material.ice());
 			addChild(floor);
+			
+			resize(_width, _height);
 		}
 		
 		override protected function step(elapsed:Number):void {

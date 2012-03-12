@@ -63,7 +63,7 @@ package mikedotalmond.napoleon.examples {
 			mouseWheelZoom	= true;
 			camera.zoom 	= 0.2;
 			
-			const n	:uint = 96;
+			const n	:uint = 64;
 			const w	:uint = stage.stageWidth >> 1;
 			const h	:uint = stage.stageHeight >> 1;
 			

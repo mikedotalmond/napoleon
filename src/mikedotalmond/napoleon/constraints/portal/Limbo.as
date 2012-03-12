@@ -4,8 +4,8 @@ package mikedotalmond.napoleon.constraints.portal {
 	
 	final public class Limbo {
 		
-		public var mBody:Body; //master
-		public var sBody:Body; //slave
+		public var master:Body; //master
+		public var slave:Body; //slave
 		
 		public var cnt	:int;
 		public var info	:PortalInfo;

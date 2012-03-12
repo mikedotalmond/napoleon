@@ -1,7 +1,6 @@
 package mikedotalmond.napoleon.constraints.portal {
 	
 	import nape.phys.Body;
-	import mikedotalmond.napoleon.constraints.PortalConstraint;
 
 	final public class PortalInfo {
 		//source body
