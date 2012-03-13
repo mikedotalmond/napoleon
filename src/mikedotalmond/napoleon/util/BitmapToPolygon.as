@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package mikedotalmond.napoleon {
+package mikedotalmond.napoleon.util {
 	
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;

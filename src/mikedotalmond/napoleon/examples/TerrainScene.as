@@ -35,7 +35,7 @@ package mikedotalmond.napoleon.examples {
 	import flash.utils.getTimer;
 	
 	import mikedotalmond.napoleon.INapeNode;
-	import mikedotalmond.napoleon.BitmapToPolygon;
+	import mikedotalmond.napoleon.util.BitmapToPolygon;
 	import mikedotalmond.napoleon.NapePolygon2D;
 	import mikedotalmond.napoleon.NapeScene2D;
 	

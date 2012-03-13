@@ -240,6 +240,8 @@ package mikedotalmond.napoleon {
 			
 			if (parent) parent.removeChild(this);
 			
+			space.constraints.clear();
+			space.listeners.clear();
 			space.clear();
 			space = null;
 		}

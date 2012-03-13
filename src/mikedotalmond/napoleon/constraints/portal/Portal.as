@@ -22,20 +22,17 @@ package mikedotalmond.napoleon.constraints.portal {
 		public var width	:Number;
 		
 		public function Portal(node:INapeNode, direction:Vec2, width:Number, height:Number) {
-			this.node 		= node;
-			this.body 		= node.body;
-			this.position 	= body.localCOM.add(new Vec2(width / 2.1, 0))
-			this.direction 	= direction;
-			this.width 		= height;
+			this.node 			= node;
+			this.body 			= node.body;
+			this.position 		= body.localCOM.add(new Vec2(width / 2.1, 0))
+			this.direction 		= direction;
+			this.width 			= height;
+			node.body.userData 	= this;
 			node.body.shapes.foreach(function(s:Shape):void {
 				s.cbType = PortalManager.PORTAL;
 				s.filter = new InteractionFilter( -1, -1, -1, -1, -1, -1);
 			});
 			
-			node.body.userData = this;
-			//body.shapes.add(new Polygon(Polygon.rect( -width / 2, -height / 2, width, -width), null, null, PortalManager.OBJECT));
-			//body.shapes.add(new Polygon(Polygon.rect( -width / 2, height / 2, width, width), null, null, PortalManager.OBJECT));
-			//body.shapes.add(new Polygon(Polygon.rect( -width / 2, -height / 2 - width, -width, height + width * 2), null, null, PortalManager.OBJECT));
 		}
 	}
 }

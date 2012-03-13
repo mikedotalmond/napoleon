@@ -255,7 +255,7 @@ package mikedotalmond.napoleon {
 		 * @param	value
 		 */
 		override public function setActiveScene(value:Scene2D):void {
-			
+			pause();
 			if(scene) scene.dispose();
 			
 			super.setActiveScene(value);
@@ -269,6 +269,7 @@ package mikedotalmond.napoleon {
 			}
 			
 			System.pauseForGCIfCollectionImminent();
+			resume();
 		}
 		
 		

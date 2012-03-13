@@ -74,10 +74,10 @@ package mikedotalmond.napoleon.examples {
 			
 			//-------------------------------------------------------------------------
 			
-			p1 = genPortal(new Vec2(100, 225), new Vec2(1, 0), 150);
-			p2 = genPortal(new Vec2(500, 225), new Vec2( -1, 0), 100);
-			p3 = genPortal(new Vec2(300, 25), new Vec2(0, 1), 150);
-			p4 = genPortal(new Vec2(300, 425), new Vec2(0, -1), 100);
+			p1 = genPortal(new Vec2(100, 225), new Vec2(1, 0), 250);
+			p2 = genPortal(new Vec2(500, 225), new Vec2( -1, 0), 200);
+			p3 = genPortal(new Vec2(300, 25), new Vec2(0, 1), 250);
+			p4 = genPortal(new Vec2(300, 425), new Vec2(0, -1), 200);
 			
 			p1.target = p2;
 			p2.target = p3;
@@ -108,10 +108,6 @@ package mikedotalmond.napoleon.examples {
 			var h:Number = (_height * 0.5);
 			var w:Number = (_width * 0.5);
 			
-			//p1.body.angularVel 	= Math.sin(space.elapsedTime * 0.115);
-			//p4.body.position.x	= w + w * 0.6 * Math.sin(space.elapsedTime * 0.189);
-			//p4.body.position.y	= h + h * 0.6 * Math.cos(space.elapsedTime * 0.129);
-			
 			space.liveBodies.foreach(function(p:Body):void {
 				p.velocity.muleq(0.995);
 				p.angularVel *= 0.995;
@@ -129,10 +125,10 @@ package mikedotalmond.napoleon.examples {
 		override public function resize(w:uint, h:uint):void {
 			super.resize(w, h);
 			if (p1) {
-				p1.body.position.x = 48;
-				p2.body.position.x = w - 48;
-				p3.body.position.y = 48;
-				p4.body.position.y = h - 48;
+				p1.body.position.x = 64;
+				p2.body.position.x = w - 64;
+				p3.body.position.y = 64;
+				p4.body.position.y = h - 64;
 			}
 			bounds.width  = w + 100;
 			bounds.height = h + 100;
