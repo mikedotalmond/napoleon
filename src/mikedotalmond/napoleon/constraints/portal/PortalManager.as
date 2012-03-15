@@ -33,17 +33,21 @@ package mikedotalmond.napoleon.constraints.portal {
 		
 		private var space			:Space;
 		private var container		:Node2D;
+		private var minScale		:Number;
+		private var maxScale		:Number;
 		
 		public function PortalManager() {
 			infos   = new Vector.<PortalInfo>();
 			limbos  = new Vector.<Limbo>();
 		}
 		
-		public function init(space:Space, container:Node2D):void {
-			//ignore relevant contacts for shapes in limbo
-			this.space = space;
-			this.container = container;
+		public function init(space:Space, container:Node2D, minScale:Number = 0.3, maxScale:Number = 2):void {
+			this.space 		= space;
+			this.container 	= container;
+			this.minScale 	= minScale;
+			this.maxScale 	= maxScale;
 			
+			//ignore relevant contacts for shapes in limbo
 			space.listeners.add(new PreListener(InteractionType.COLLISION, OBJECT, INOUT, onPreCollision));
 			space.listeners.add(new PreListener(InteractionType.COLLISION, INOUT, INOUT, onPreCollision));
 			space.listeners.add(new PreListener(InteractionType.COLLISION, PORTER, INOUT, onPreCollision));
@@ -100,14 +104,18 @@ package mikedotalmond.napoleon.constraints.portal {
 				object = null;
 			} else {
 				if (object == limbo.master) {
-					//node 		= limbo.sBody.userData as INapeNode;
+					node = limbo.slave.userData as INapeNode
+					node.setBodyNull();
+					container.removeChild(node as Node2D);
+					node = null;
 					limbo.slave = null;
 				} else {
-					//node 		= limbo.mBody.userData as INapeNode;
+					node = limbo.master.userData as INapeNode
+					node.setBodyNull();
+					container.removeChild(node as Node2D);
+					node = null;
 					limbo.master = null;
 				}
-				//node.setBodyNull();
-				//scene.removeChild(node as Node2D);
 			}
 			
 			delfromLimbo(info.limbos, limbo);	
@@ -123,6 +131,8 @@ package mikedotalmond.napoleon.constraints.portal {
 					info.slave.space = null;
 					node = info.slave.userData as INapeNode;
 				}
+				
+				node.setBodyNull();
 				container.removeChild(node as Node2D);
 				node = null;
 				delfrom(infos, info);
@@ -148,12 +158,15 @@ package mikedotalmond.napoleon.constraints.portal {
 			var node		:INapeNode;
 			var clone		:INapeNode;
 			var cloneBody	:Body;
+			var sX			:Number;
 			
 			if (info == null) {
 				node  		= object.userData as INapeNode;
 				clone 		= node.copyAsINapeNode();
-				clone.scale(scale, scale);
-				clone.body.position.set(node.body.position);
+				sX			= clone.scaleX * scale;
+				if (sX > minScale && sX < maxScale) {
+					clone.scale(scale, scale);
+				}
 				cloneBody 	= clone.body;
 				container.addChild(clone as Node2D);
 				

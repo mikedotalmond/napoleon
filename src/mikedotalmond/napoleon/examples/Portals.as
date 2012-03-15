@@ -3,6 +3,7 @@ package mikedotalmond.napoleon.examples {
 	import com.furusystems.logging.slf4as.ILogger;
 	import com.furusystems.logging.slf4as.Logging;
 	import mikedotalmond.napoleon.NapeContainer2D;
+	import nape.dynamics.InteractionFilter;
 	
 	import flash.events.Event;
 	import flash.geom.Rectangle;
@@ -42,10 +43,13 @@ package mikedotalmond.napoleon.examples {
 		
 		override protected function onAddedToStage(e:Event):void {
 			Logger.info("Nape portals test...");
-			
+			positionIterations = velocityIterations = 10;
 			super.onAddedToStage(e);
 			
 			addSceneMouseJoint();
+			hand.maxForce = 250;
+			
+			space.gravity = new Vec2(0, 32);
 			
 			portalContainer = new NapeContainer2D(space);
 			porteecontainer = new NapeContainer2D(space);
@@ -54,9 +58,6 @@ package mikedotalmond.napoleon.examples {
 			addChild(portalContainer);
 			
 			createStageBorderBody();
-			border.shapes.foreach(function(s:Shape):void { s.cbType = PortalManager.OBJECT } );
-			border.cbType = PortalManager.OBJECT;
-			
 			//-------------------------------------------------------------------------
 			
 			var a:Vector.<Vec2> = Vector.<Vec2>([	
@@ -74,7 +75,7 @@ package mikedotalmond.napoleon.examples {
 			
 			//-------------------------------------------------------------------------
 			
-			p1 = genPortal(new Vec2(100, 225), new Vec2(1, 0), 250);
+			p1 = genPortal(new Vec2(100, 225), new Vec2(1, -0.25), 250);
 			p2 = genPortal(new Vec2(500, 225), new Vec2( -1, 0), 200);
 			p3 = genPortal(new Vec2(300, 25), new Vec2(0, 1), 250);
 			p4 = genPortal(new Vec2(300, 425), new Vec2(0, -1), 200);
@@ -94,7 +95,7 @@ package mikedotalmond.napoleon.examples {
 		private function genPortal(pos:Vec2,dir:Vec2, w:Number):Portal {
 			var h	:Number 	= 8;
 			var port:NapeQuad2D = new NapeQuad2D(h, w);
-			port.linearGradient(0x008080, 0xff0080, 1, 1, true);
+			port.linearGradient(0xff0000, 0xff000, 1, 0.8, true);
 			port.init(pos, null, BodyType.KINEMATIC);
 			port.body.rotation = dir.angle;
 			portalContainer.addChild(port);
@@ -109,9 +110,14 @@ package mikedotalmond.napoleon.examples {
 			var w:Number = (_width * 0.5);
 			
 			space.liveBodies.foreach(function(p:Body):void {
-				p.velocity.muleq(0.995);
-				p.angularVel *= 0.995;
+				p.velocity.muleq(0.989);
+				p.angularVel *= 0.989;
 			});
+			
+			if (!mouseIsDown) {
+				p4.node.x += (stage.mouseX - p4.node.x) * 0.1;
+				p3.node.x += (_width-stage.mouseX - p3.node.x) * 0.1;
+			}
 			
 			super.step(elapsed);
 		}
@@ -125,10 +131,20 @@ package mikedotalmond.napoleon.examples {
 		override public function resize(w:uint, h:uint):void {
 			super.resize(w, h);
 			if (p1) {
-				p1.body.position.x = 64;
-				p2.body.position.x = w - 64;
-				p3.body.position.y = 64;
-				p4.body.position.y = h - 64;
+				var hh:Number = h >> 1;
+				var hw:Number = w >> 1;
+				
+				p1.body.position.x = 128;
+				p1.body.position.y = hh;
+				
+				p2.body.position.x = w - 128;
+				p2.body.position.y = hh;
+				
+				p3.body.position.x = hw;
+				p3.body.position.y = 128;
+				
+				p4.body.position.x = hw;
+				p4.body.position.y = h - 128;
 			}
 			bounds.width  = w + 100;
 			bounds.height = h + 100;

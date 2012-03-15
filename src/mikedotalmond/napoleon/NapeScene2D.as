@@ -81,6 +81,7 @@ package mikedotalmond.napoleon {
 		
 		protected var border			:Body;
 		protected var hand				:PivotJoint;
+		protected var mouseIsDown		:Boolean = false;
 		
 		
 		/**
@@ -95,6 +96,8 @@ package mikedotalmond.napoleon {
 		protected function onAddedToStage(e:Event):void {
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			resize(stage.stageWidth, stage.stageHeight);
+			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
+			addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);	
 			mouseWheelZoom = _mouseWheelZoom;
 		}
 		
@@ -116,31 +119,33 @@ package mikedotalmond.napoleon {
 			hand.active = false;
 			hand.stiff = false;
 			hand.space = space;
-			hand.maxForce = 1000;
-			addEventListener(MouseEvent.MOUSE_DOWN, onMouseJointDown, false, 0, true);
-			addEventListener(MouseEvent.MOUSE_UP, onMouseJointUp, false, 0, true);			
+			hand.maxForce = 1000;		
 		}
 		
 		protected function removeSceneMouseJoint():void {
 			if (hand == null) return;
 			hand.active = false;
 			hand.space 	= null;
-			hand 		= null;
-			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseJointDown);
-			removeEventListener(MouseEvent.MOUSE_UP, onMouseJointUp);		
+			hand 		= null;		
 		}
 		
-		protected function onMouseJointUp(e:MouseEvent):void { hand.active = false; }
+		protected function onMouseUp(e:MouseEvent):void {
+			mouseIsDown = false;
+			if (hand) hand.active = false;
+		}
 		
-		protected function onMouseJointDown(e:MouseEvent):void {
-			var mp:Vec2 = new Vec2(stage.mouseX, stage.mouseY);
-			space.bodiesUnderPoint(mp).foreach(function(b:Body):void {
-				if(b.isDynamic()) {
-					hand.body2 		= b;
-					hand.anchor2 	= b.worldToLocal(mp);
-					hand.active 	= true;
-				}
-			});
+		protected function onMouseDown(e:MouseEvent):void {
+			mouseIsDown = true;
+			if (hand){
+				var mp:Vec2 = new Vec2(stage.mouseX, stage.mouseY);
+				space.bodiesUnderPoint(mp).foreach(function(b:Body):void {
+					if(b.isDynamic()) {
+						hand.body2 		= b;
+						hand.anchor2 	= b.worldToLocal(mp);
+						hand.active 	= true;
+					}
+				});
+			}
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -222,6 +227,9 @@ package mikedotalmond.napoleon {
 		
 		override public function dispose():void {
 			removeSceneMouseJoint();
+			
+			removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);	
 			
 			_bounds = null;
 			mouseWheelZoom = false;

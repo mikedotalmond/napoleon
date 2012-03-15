@@ -52,6 +52,11 @@ package mikedotalmond.napoleon {
 		function set rotation(value:Number):void;
 		function scale(x:Number, y:Number):void; //scale the node and associated nape body (mulplicative)
 		
+		function get scaleX():Number;
+		function get scaleY():Number;
+		function set scaleX(value:Number):void;
+		function set scaleY(value:Number):void;
+		
 		function dispose():void; // clean up
 	}
 }
