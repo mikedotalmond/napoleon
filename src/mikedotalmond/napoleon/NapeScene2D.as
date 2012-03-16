@@ -244,14 +244,14 @@ package mikedotalmond.napoleon {
 				border = null;
 			}
 			
-			super.dispose();
-			
-			if (parent) parent.removeChild(this);
-			
 			space.constraints.clear();
 			space.listeners.clear();
 			space.clear();
 			space = null;
+			
+			super.dispose();
+			
+			if (parent) parent.removeChild(this);
 		}
 	}
 }

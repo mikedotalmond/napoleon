@@ -57,5 +57,13 @@ package mikedotalmond.napoleon.constraints.portal {
 			nd.x = (-width * 4);
 			(node as Node2D).addChild(nd);
 		}
+		
+		public function dispose():void {
+			position 	= null;
+			direction 	= null;
+			if(node) node.setBodyNull();
+			node = null;
+			target = null;
+		}
 	}
 }

@@ -135,6 +135,14 @@ package mikedotalmond.napoleon.examples {
 		override public function dispose():void {
 			manager.dispose();
 			manager = null;
+			p1.dispose();
+			p1 = null;
+			p2.dispose();
+			p2 = null;
+			p3.dispose();
+			p3 = null;
+			p4.dispose();
+			p4 = null;
 			super.dispose();
 		}
 		

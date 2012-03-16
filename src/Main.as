@@ -41,8 +41,8 @@ package  {
 	import mikedotalmond.napoleon.examples.PostProcessingTest;
 	import mikedotalmond.napoleon.examples.TestScene2D;
 	import mikedotalmond.napoleon.examples.TerrainScene;
+	import mikedotalmond.napoleon.examples.Portals;
 	import mikedotalmond.napoleon.NapeWorld2D;
-	
 	
 	/**
 	 * ...
@@ -50,7 +50,11 @@ package  {
 	 */
 	 public final class Main extends NapeWorld2D {
 		
+		private static var INSTANCE				:Main;
+		static public function get instance()	:Main { return INSTANCE; }
+		
 		public function Main() {
+			INSTANCE = this;
 			super(Context3DRenderMode.AUTO, 60);
 			GameControllerClass = KeyboardGamepadController;
 		}
@@ -58,8 +62,6 @@ package  {
 		override protected function addedToStage(event:Event):void {
 			super.addedToStage(event);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
-			stage.doubleClickEnabled = true;
-			stage.addEventListener(MouseEvent.DOUBLE_CLICK, toggleFullscreen, false, 0, true);
 		}
 		
 		override protected function setupDConsole():void {
@@ -89,7 +91,7 @@ package  {
 		}
 		
 		override protected function setupScenes():void {
-			//addScene(LogoTest, "logo");
+			addScene(Portals, "portals");
 			addScene(TerrainScene, "terrain");
 			addScene(PostProcessingTest, "post");
 			addScene(BinaryClockScene, "clock");

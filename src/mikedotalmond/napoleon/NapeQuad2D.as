@@ -100,8 +100,10 @@ package mikedotalmond.napoleon {
 		override public function dispose():void {
 			if (_body) {
 				_body.space = null;
+				_body.userData = null;
+				_body.constraints.foreach(function(c:Constraint):void { _body.space.constraints.remove(c); } );
 				_body.clear();
-				_body 		= null;
+				_body = null;
 			}
 			super.dispose();
 		}
