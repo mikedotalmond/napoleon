@@ -153,6 +153,7 @@ package mikedotalmond.napoleon {
 			node._isCircle 		= _isCircle;
 			node._scaleX 		= _scaleX;
 			node._scaleY 		= _scaleY;
+			node.x = node.y 	= -1000;
 			node.mouseEnabled 	= mouseEnabled;
 			
 			return node;

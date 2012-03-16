@@ -49,7 +49,7 @@ package mikedotalmond.napoleon.examples {
 			addSceneMouseJoint();
 			hand.maxForce = 250;
 			
-			space.gravity = new Vec2(0, 32);
+			space.gravity = new Vec2(0, 34);
 			
 			portalContainer = new NapeContainer2D(space);
 			porteecontainer = new NapeContainer2D(space);
@@ -61,14 +61,18 @@ package mikedotalmond.napoleon.examples {
 			//-------------------------------------------------------------------------
 			
 			var a:Vector.<Vec2> = Vector.<Vec2>([	
-				new Vec2(200, 225), new Vec2(400, 225), new Vec2(300, 125), new Vec2(300, 325),
-				new Vec2(50, 50), new Vec2(550, 50), new Vec2(50, 400), new Vec2(550, 400)
+				new Vec2(600, 300), new Vec2(680, 300), new Vec2(600, 250), new Vec2(680, 250),
+				new Vec2(600, 300), new Vec2(680, 300), new Vec2(600, 250), new Vec2(680, 250),
+				new Vec2(600, 300), new Vec2(680, 300), new Vec2(600, 250), new Vec2(680, 250),
+				new Vec2(600, 250), new Vec2(680, 250), new Vec2(600, 250), new Vec2(680, 250),
+				new Vec2(600, 200), new Vec2(680, 200), new Vec2(600, 100), new Vec2(680, 100),
+				new Vec2(600, 150), new Vec2(680, 150), new Vec2(600, 100), new Vec2(680, 100)
 			]);
 			
 			var s:Shape;
 			var node:INapeNode;
 			for each(var p:Vec2 in a) {
-				node = new NapePolygon2D(NapePolygon2D.circle(12), null, 0xffff0000);
+				node = new NapePolygon2D(NapePolygon2D.circle(6), null, 0xffff0000);
 				(node as NapePolygon2D).init(p, true, BodyType.DYNAMIC).cbType = PortalManager.PORTER;
 				porteecontainer.addChild((node as NapePolygon2D));
 			}
@@ -76,8 +80,8 @@ package mikedotalmond.napoleon.examples {
 			//-------------------------------------------------------------------------
 			
 			p1 = genPortal(new Vec2(100, 225), new Vec2(1, -0.25), 250);
-			p2 = genPortal(new Vec2(500, 225), new Vec2( -1, 0), 200);
-			p3 = genPortal(new Vec2(300, 25), new Vec2(0, 1), 250);
+			p2 = genPortal(new Vec2(500, 225), new Vec2( 0, -1), 320);
+			p3 = genPortal(new Vec2(300, 0), new Vec2(0, 1), 160);
 			p4 = genPortal(new Vec2(300, 425), new Vec2(0, -1), 200);
 			
 			p1.target = p2;
@@ -86,7 +90,7 @@ package mikedotalmond.napoleon.examples {
 			p4.target = p1;
 			
 			manager = new PortalManager();
-			manager.init(space, porteecontainer);
+			manager.init(space, porteecontainer, 0.5, 4);
 			
 			resize(_width, _height);
 		}
@@ -109,17 +113,23 @@ package mikedotalmond.napoleon.examples {
 			var h:Number = (_height * 0.5);
 			var w:Number = (_width * 0.5);
 			
-			space.liveBodies.foreach(function(p:Body):void {
-				p.velocity.muleq(0.989);
-				p.angularVel *= 0.989;
-			});
+			space.liveBodies.foreach(limitVelocity);
 			
-			if (!mouseIsDown) {
+			/*
+			if (mouseIsDown) {
 				p4.node.x += (stage.mouseX - p4.node.x) * 0.1;
 				p3.node.x += (_width-stage.mouseX - p3.node.x) * 0.1;
-			}
+			} else {
+				p4.node.x += (_width/2 - p4.node.x) * 0.1;
+				p3.node.x += (_width-_width/2 - p3.node.x) * 0.1;
+			}*/
 			
 			super.step(elapsed);
+		}
+		
+		private static function limitVelocity(b:Body):void {
+			b.velocity.muleq(0.988);
+			b.angularVel *= 0.988;
 		}
 		
 		override public function dispose():void {
@@ -131,20 +141,20 @@ package mikedotalmond.napoleon.examples {
 		override public function resize(w:uint, h:uint):void {
 			super.resize(w, h);
 			if (p1) {
-				var hh:Number = h >> 1;
-				var hw:Number = w >> 1;
+				var hw:Number = 640;// w >> 1;
+				var hh:Number = 360;// h >> 1;
 				
-				p1.body.position.x = 128;
+				p1.body.position.x = 164;
 				p1.body.position.y = hh;
 				
-				p2.body.position.x = w - 128;
-				p2.body.position.y = hh;
+				p2.body.position.x = hw - 260;
+				p2.body.position.y = 720 - 40;
 				
-				p3.body.position.x = hw;
-				p3.body.position.y = 128;
+				p3.body.position.x = hw-64;
+				p3.body.position.y = 64;
 				
 				p4.body.position.x = hw;
-				p4.body.position.y = h - 128;
+				p4.body.position.y = 720 - 132;
 			}
 			bounds.width  = w + 100;
 			bounds.height = h + 100;
