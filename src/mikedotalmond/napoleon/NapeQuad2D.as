@@ -102,7 +102,7 @@ package mikedotalmond.napoleon {
 			if (_body) {
 				_body.space = null;
 				_body.userData = null;
-				_body.constraints.foreach(function(c:Constraint):void { _body.space.constraints.remove(c); } );
+				while(!_body.constraints.empty()) _body.constraints.at(0).space = null; //(no lambdas)
 				_body.clear();
 				_body = null;
 			}

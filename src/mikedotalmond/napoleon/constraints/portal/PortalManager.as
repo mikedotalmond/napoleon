@@ -280,7 +280,7 @@ package mikedotalmond.napoleon.constraints.portal {
 			infos = null;
 			limbos = null;
 			
-			space.listeners.foreach(function(l:InteractionListener):void { space.listeners.remove(l);  } );
+			while (!space.listeners.empty()) space.listeners.remove(space.listeners.at(0));
 			space = null;
 		}
 		
