@@ -163,8 +163,9 @@ package mikedotalmond.napoleon.constraints.portal {
 			if (info == null) {
 				node  		= object.userData as INapeNode;
 				clone 		= node.copyAsINapeNode();
-				sX			= clone.scaleX * scale;
-				if (sX > minScale && sX < maxScale) clone.scale(scale, scale);
+				sX 			= Math.min(Math.max(clone.scaleX * scale, minScale), maxScale);
+				clone.scale(sX / clone.scaleX, sX / clone.scaleX);
+				
 				cloneBody = clone.body;
 				container.addChild(clone as Node2D);
 				
