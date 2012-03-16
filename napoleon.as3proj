@@ -54,7 +54,7 @@
   <libraryPaths>
     <element path="lib\DConsole2.swc" />
     <element path="lib\as3-signals-v0.9-BETA.swc" />
-    <element path="lib\debug_nape.swc" />
+    <element path="lib\release_nape.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

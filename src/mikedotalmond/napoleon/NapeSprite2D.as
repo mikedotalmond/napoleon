@@ -25,6 +25,7 @@ package mikedotalmond.napoleon {
 	import de.nulldesign.nd2d.display.Sprite2D;
 	import de.nulldesign.nd2d.materials.texture.Texture2D;
 	import flash.events.Event;
+	import nape.constraint.Constraint;
 	import nape.phys.Material;
 	
 	import nape.geom.Vec2;

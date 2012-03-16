@@ -26,6 +26,7 @@ package mikedotalmond.napoleon {
 	import de.nulldesign.nd2d.geom.Vertex;
 	import de.nulldesign.nd2d.materials.Quad2DColorMaterial;
 	import flash.geom.Vector3D;
+	import nape.constraint.Constraint;
 	import nape.geom.Vec2;
 	import nape.geom.Vec2List;
 	import nape.phys.Body;
