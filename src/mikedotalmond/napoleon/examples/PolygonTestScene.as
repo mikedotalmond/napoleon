@@ -150,7 +150,7 @@ package mikedotalmond.napoleon.examples {
 			// circle
 			n = 128;
 			while (--n) {
-				// calling NapePolygon2D.circle creates creates a poly with 24 subdivisions (close enough to a circle when not too large)
+				// calling NapePolygon2D.circle creates a poly with 24 subdivisions (close enough to a circle when not too large)
 				testF = new NapePolygon2D(NapePolygon2D.circle(8 + Math.random()*32), Texture2D.textureFromBitmapData(new TextureBD().bitmapData));
 				testF.init(getRandomStagePosition(), true, null, Material.glass()); // setting isCircle=true makes the Nape physics object a circle, not a polygon with many edges
 				addChild(testF);
@@ -162,7 +162,7 @@ package mikedotalmond.napoleon.examples {
 			addChild(testH);
 			
 			// the ground object			
-			floor = new NapeSprite2D(Texture2D.textureFromBitmapData(new BitmapData(stage.stage.fullScreenWidth, 64, false, 0xffff0000)))
+			floor = new NapeSprite2D(Texture2D.textureFromBitmapData(new BitmapData(stage.fullScreenWidth, 64, false, 0xffff0000)))
 			floor.init(new Vec2(stage.stageWidth >> 1, stage.stageHeight), BodyType.KINEMATIC, NapeSprite2D.BODY_SHAPE_BOX, Material.ice());
 			addChild(floor);
 			
