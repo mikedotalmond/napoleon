@@ -22,6 +22,7 @@ THE SOFTWARE.
 package  {
 	
 	import com.furusystems.dconsole2.DConsole;
+	import mikedotalmond.napoleon.examples.QuadListScene;
 	
 	import flash.display.StageDisplayState;
 	import flash.display3D.Context3DRenderMode;
@@ -81,17 +82,22 @@ package  {
 			} else if (e.keyCode == KeyboardPlus.F) {
 				if (stage) {
 					try {
-						stage.displayState = StageDisplayState.FULL_SCREEN;
+						stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 						DConsole.hide();
-					} catch (err:Error) {
-						Logger.error(err); //allowFullscreen not set?
+					} catch (er:Error) {
+						try {
+							stage.displayState = StageDisplayState.FULL_SCREEN;
+						}catch (err:Error) {
+							Logger.error(err); //allowFullscreen not set?
+						}
 					}
 				}
 			}
 		}
 		
 		override protected function setupScenes():void {
-			addScene(Portals, "portals");
+			addScene(LineTest, "lines"); 
+			//addScene(Portals, "portals"); portals have been broken a bit by a recent update to nape... investigating api changes.
 			addScene(TerrainScene, "terrain");
 			addScene(PostProcessingTest, "post");
 			addScene(BinaryClockScene, "clock");
@@ -99,8 +105,6 @@ package  {
 			addScene(PolygonTestScene, "poly");
 			addScene(CarScene, "car");
 			addScene(PointFieldTest, "gravity");
-			addScene(LineTest, "lines");
-			//addScene(QuadListScene, "quad");
 		}
 		
 		override protected function context3DCreated(e:Event):void {

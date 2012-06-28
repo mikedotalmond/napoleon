@@ -9,7 +9,7 @@
     <movie width="1280" />
     <movie height="720" />
     <movie version="11" />
-    <movie minorVersion="0" />
+    <movie minorVersion="3" />
     <movie platform="Flash Player" />
     <movie background="#C0C0C0" />
   </output>
@@ -54,7 +54,7 @@
   <libraryPaths>
     <element path="lib\DConsole2.swc" />
     <element path="lib\as3-signals-v0.9-BETA.swc" />
-    <element path="lib\debug_nape.swc" />
+    <element path="lib\release_nape.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
