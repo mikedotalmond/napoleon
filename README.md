@@ -1,5 +1,5 @@
 Note:
-Development of the parent project, [ND2D][9], hase ceased, so it is unlikely that I'll add to Napoelon in the near future.
+Development of the parent project, [ND2D][9], has ceased, so it is unlikely that I'll add to Napoelon in the near future.
 I'm sure something useful will come out of it... I certainly learnt some things about convex hulls, polygon decomposition and triangulation.
 
 If you've used it - thanks. I'll still try to reply to questions and merge any pull requests I recieve.
