@@ -233,9 +233,13 @@ package mikedotalmond.napoleon {
 			
 			_bounds = null;
 			mouseWheelZoom = false;
-			_gameController.update.remove(onControllerUpdate);
-			_gameController.dispose();
-			_gameController = null;
+			
+			if(_gameController!=null){
+				_gameController.update.remove(onControllerUpdate);
+				_gameController.dispose();
+				_gameController = null;
+			}
+			
 			camera.x = camera.y = 0;
 			camera.zoom = 1;
 			
