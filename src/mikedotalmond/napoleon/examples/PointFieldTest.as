@@ -54,6 +54,8 @@ package mikedotalmond.napoleon.examples {
 			Logger.info("Testing infinite PointField(s) - all objects attract each other and there's a fixed-field in the middle to keep everything rotating about a central point");
 			Logger.info("(it takes a minute or two to settle down...)");
 			Logger.info("Use the mouse-wheel to zoom in/out");
+			positionIterations = 20;
+			velocityIterations = 20;
 		}
 		
 		override protected function onAddedToStage(e:Event):void {
@@ -61,7 +63,7 @@ package mikedotalmond.napoleon.examples {
 			
 			backgroundColor	= 0;
 			mouseWheelZoom	= true;
-			camera.zoom 	= 0.2;
+			camera.zoom 	= 0.1;
 			
 			const n	:uint = 64;
 			const w	:uint = stage.stageWidth >> 1;
@@ -71,17 +73,17 @@ package mikedotalmond.napoleon.examples {
 			var j	:int;
 			var poly:NapePolygon2D;
 			
-			middle 	= new PointField(new Vec2(w, h), null, NaN, 50, 200);
+			middle 	= new PointField(new Vec2(w, h), null, NaN, 50, 1000);
 			fields	= new Vector.<PointField>(n, true);
 			bodies	= new Vector.<Body>(n, true);
 			
 			i = n;
 			while (--i > -1) {
-				poly 	= new NapePolygon2D(NapePolygon2D.circle(12 + Math.random() * (i < 3 ? 128 : 24)), null, Math.random() * 0xffff6633);
+				poly 	= new NapePolygon2D(NapePolygon2D.circle(12 + Math.random() * 32), null, Math.random() * 0xffff6633);
 				poly.init(getRandomBoundsPosition(), true, null, Material.sand());
 				
 				bodies[i] = poly.body;
-				fields[i] = new PointField(null, poly.body, NaN, 0.05, 200);
+				fields[i] = new PointField(null, poly.body, NaN, 0.0125, 1000);
 				
 				middle.addBody(poly.body);
 				addChild(poly);
