@@ -129,7 +129,7 @@ package mikedotalmond.napoleon.examples.car {
 			
 			if (moving) { // drag
 				rotate2DYOnly(p.dragLevel * -vY, shell.body.rotation, v2); 
-				shell.body.applyLocalImpulse(v2);
+				shell.body.applyImpulse(v2);
 			}
 			
 			var maxSkid	:Number = 0;
@@ -173,7 +173,7 @@ package mikedotalmond.napoleon.examples.car {
 				
 				if (vYimpulse != 0) { // apply vYimpulse
 					rotate2DYOnly(vYimpulse, body.rotation, v2);
-					body.applyLocalImpulse(v2);
+					body.applyImpulse(v2);
 				}
 				
 				// kill sideways velocity. use gripDistribution to allow skidding
@@ -275,7 +275,7 @@ internal final class WheelJoint {
 		pivot.ignore 	= true;
 		
 		// limit wheel steering rotation
-		angle 			= new AngleJoint(shell, wheel, minAngle, maxAngle);
+		angle 			= new AngleJoint(shell, wheel, minAngle, maxAngle, 1);
 		angle.space  	= space;
 		angle.stiff 	= true;
 		angle.maxForce 	= 100;

@@ -81,7 +81,7 @@ package mikedotalmond.napoleon {
 			}
 			
 			initWithBody(position, b);
-			_body.userData = this;
+			_body.userData.nd2d = this;
 			return _body;
 		}
 		
@@ -95,7 +95,7 @@ package mikedotalmond.napoleon {
 			x = position.x;
 			y = position.y;
 			rotation = 0;
-			_body.userData = this;
+			_body.userData.nd2d = this;
 		}
 		
 		override protected function step(elapsed:Number):void {
@@ -107,9 +107,9 @@ package mikedotalmond.napoleon {
 		override public function dispose():void {
 			if (_body) {
 				_body.space = null;
-				_body.userData = null;
+				_body.userData.nd2d = null;
 				while(!_body.constraints.empty()) _body.constraints.at(0).space = null; //(no lambdas)
-				_body.clear();
+				//_body.clear();
 				_body = null;
 			}
 			super.dispose();

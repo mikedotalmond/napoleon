@@ -107,7 +107,7 @@ package mikedotalmond.napoleon.forces {
 						tempVec.setxy(b.velocity.x + f * Math.cos(theta), b.velocity.y + f * Math.sin(theta));
 					} 
 					
-					b.applyLocalForce(tempVec, tempVec2);
+					b.applyImpulse(tempVec, tempVec2);
 					if (b.velocity.length > maxVelocity) b.velocity.length += (maxVelocity - b.velocity.length);// * 0.8;
 				}				
 			}

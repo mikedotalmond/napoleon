@@ -141,7 +141,7 @@ package mikedotalmond.napoleon {
 				space.bodiesUnderPoint(mp).foreach(function(b:Body):void {
 					if(b.isDynamic()) {
 						hand.body2 		= b;
-						hand.anchor2 	= b.worldToLocal(mp);
+						hand.anchor2 	= b.worldPointToLocal(mp);
 						hand.active 	= true;
 					}
 				});
@@ -192,7 +192,7 @@ package mikedotalmond.napoleon {
 			
 			if (border) {
 				border.space = null;
-				border.clear();
+				//border.clear();
 				border.shapes.add(new Polygon(Polygon.rect(0, 0, -50, h)));
 				border.shapes.add(new Polygon(Polygon.rect(w, 0, 50, h)));
 				border.shapes.add(new Polygon(Polygon.rect(0, 0, w, -50)));

@@ -96,15 +96,15 @@ package  {
 		}
 		
 		override protected function setupScenes():void {
-			addScene(LineTest, "lines"); 
-			//addScene(Portals, "portals"); portals have been broken a bit by a recent update to nape... investigating api changes.
-			addScene(TerrainScene, "terrain");
-			addScene(PostProcessingTest, "post");
-			addScene(BinaryClockScene, "clock");
-			addScene(TestScene2D, "boxes");
+			//addScene(Portals, "portals");//portals have been broken a bit by a recent update to nape... investigating api changes.
 			addScene(PolygonTestScene, "poly");
+			addScene(TestScene2D, "boxes");
+			addScene(TerrainScene, "terrain");
 			addScene(CarScene, "car");
 			addScene(PointFieldTest, "gravity");
+			addScene(BinaryClockScene, "clock");
+			addScene(PostProcessingTest, "post");
+			addScene(LineTest, "lines"); 			
 		}
 		
 		override protected function context3DCreated(e:Event):void {

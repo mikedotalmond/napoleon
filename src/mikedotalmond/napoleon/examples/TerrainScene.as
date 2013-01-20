@@ -209,14 +209,14 @@ package mikedotalmond.napoleon.examples {
 			jointLines.clear();
 			jointLines.lineStyle(2, 0, 0.5);
 			
-			var d:Vec2 = pJoint1.body1.relativeToWorld(pJoint1.anchor1, true);
+			var d:Vec2 = pJoint1.body1.localPointToWorld(pJoint1.anchor1, true);
 			jointLines.moveTo(d.x, d.y);
-			d = pJoint1.body2.localToWorld(pJoint1.anchor2, true);
+			d = pJoint1.body2.localPointToWorld(pJoint1.anchor2, true);
 			jointLines.lineTo(d.x, d.y);
 			
-			d = pJoint2.body1.relativeToWorld(pJoint2.anchor1, true);
+			d = pJoint2.body1.localPointToWorld(pJoint2.anchor1, true);
 			jointLines.moveTo(d.x, d.y);
-			d = pJoint2.body2.localToWorld(pJoint2.anchor2, true);
+			d = pJoint2.body2.localPointToWorld(pJoint2.anchor2, true);
 			jointLines.lineTo(d.x, d.y);
 			
 			// move the joint pivot point about a bit
@@ -225,6 +225,7 @@ package mikedotalmond.napoleon.examples {
 			platformPivot.y = 75 + 75 * Math.cos(theta / 0.8);
 			theta += 0.005;
 		}
+		
 		private var theta:Number = 0.0;
 		
 		

@@ -24,6 +24,7 @@ package mikedotalmond.napoleon.util {
 	
 	import de.nulldesign.nd2d.display.Polygon2D;
 	import de.nulldesign.nd2d.geom.PolygonData;
+	import nape.geom.IsoFunction;
 	
 	import flash.display.BitmapData;
 	
@@ -54,6 +55,8 @@ package mikedotalmond.napoleon.util {
 		private var height		:int;
 		private var offset		:Vec2;
 		
+		private var iso			:AlphaBitmapISO;
+		
 		public var bitmap		:BitmapData;
 		
 		public var space		:Space;
@@ -67,13 +70,15 @@ package mikedotalmond.napoleon.util {
 		 * @param	space
 		 */
 		public function BitmapToPolygon(space:Space):void {
-			this.space = space;
+			this.space 	= space;
+			this.iso 	= new AlphaBitmapISO();
 		}
 		
 		public function dispose():void {
 			space 	= null;
 			cells 	= null;
 			body  	= null;
+			iso 	= null;
 			bitmap 	= null;
 			bounds 	= null;
 		}
@@ -90,7 +95,7 @@ package mikedotalmond.napoleon.util {
 		 */
 		public function run(bitmap:BitmapData, offset:Vec2, cellsize:Number, subsize:Number, marchQuality:int = 2, bodyType:BodyType = null, material:Material = null):void {
 			
-			this.bitmap 		= bitmap;
+			this.bitmap 		= iso.bitmap = bitmap;
 			this.offset 		= offset;
 			this.cellsize 		= cellsize;
 			this.subsize 		= subsize;
@@ -122,7 +127,7 @@ package mikedotalmond.napoleon.util {
 				} else {
 					// copy all the shapes into a single nape body, offsetting with the current body position
 					b.shapes.foreach(function(p:Shape):void {
-						var p2:Polygon = Shape.copy(p).castPolygon;
+						var p2:Polygon = p.copy() as Polygon;
 						p2.localVerts.foreach(function(v:Vec2):void {
 							v.addeq(b.position);
 						});
@@ -130,7 +135,7 @@ package mikedotalmond.napoleon.util {
 					});
 					
 					b.space = null;
-					b.clear();
+					//b.clear();
 				}
 			}
 			
@@ -160,9 +165,9 @@ package mikedotalmond.napoleon.util {
 					b = cells[int(y * width + x)];
 					if (b != null) { // if cell body exists, clear it for re-use
 						b.space = null;
-						b.clear();
+						//b.clear();
 						b.position = offset;
-						b.userData = this;
+						b.userData.nd2d = this;
 					}
 					
 					//compute polygons in cell
@@ -173,12 +178,12 @@ package mikedotalmond.napoleon.util {
 					
 					if (b == null) {
 						cells[int(y * width + x)] = b = new Body(BodyType.STATIC, offset);
-						b.userData = this;
+						b.userData.nd2d = this;
 					}
 					
 					//decompose polygons and generate the cell body.
 					polys.foreach(function (p:GeomPoly):void {
-						qs = p.convex_decomposition();
+						qs = p.convexDecomposition();
 						qs.foreach(function (q:GeomPoly):void {
 							b.shapes.add(new Polygon(q, polyMaterial));
 							polyCount++;
@@ -190,22 +195,34 @@ package mikedotalmond.napoleon.util {
 			bitmap.unlock();
 		}
 
-		//iso-function for terrain, computed as a linearly-interpolated alpha threshold from bitmap.
-		internal function iso(x:Number,y:Number):Number {
-			var ix:int = int(x); if(ix<0) ix = 0; else if(ix>=bitmap.width)  ix = bitmap.width -1;
-			var iy:int = int(y); if(iy<0) iy = 0; else if(iy>=bitmap.height) iy = bitmap.height-1;
-			var fx:Number = x - ix; if(fx<0) fx = 0; else if(fx>1) fx = 1;
-			var fy:Number = y - iy; if(fy<0) fy = 0; else if(fy>1) fy = 1;
-			const gx:Number = 1-fx;
-			const gy:Number = 1-fy;
-			
-			const a00:int = bitmap.getPixel32(ix,iy)>>>24;
-			const a01:int = bitmap.getPixel32(ix,iy+1)>>>24;
-			const a10:int = bitmap.getPixel32(ix+1,iy)>>>24;
-			const a11:int = bitmap.getPixel32(ix+1,iy+1)>>>24;
-			
-			const ret:Number = gx*gy*a00 + fx*gy*a10 + gx*fy*a01 + fx*fy*a11;
-			return 0x80 - ret;
-		}
+	}
+}
+import flash.display.BitmapData;
+import nape.geom.IsoFunction;
+
+
+final internal class AlphaBitmapISO implements IsoFunction {
+	
+	public var bitmap:BitmapData;
+	
+	//iso-function for terrain, computed as a linearly-interpolated alpha threshold from bitmap.
+	public function iso(x:Number,y:Number):Number {
+	
+		var ix:int = int(x); if(ix<0) ix = 0; else if(ix>=bitmap.width)  ix = bitmap.width -1;
+		var iy:int = int(y); if(iy<0) iy = 0; else if(iy>=bitmap.height) iy = bitmap.height-1;
+		var fx:Number = x - ix; if(fx<0) fx = 0; else if(fx>1) fx = 1;
+		var fy:Number = y - iy; if(fy<0) fy = 0; else if(fy>1) fy = 1;
+		
+		const gx:Number = 1-fx;
+		const gy:Number = 1-fy;
+		
+		const a00:int = bitmap.getPixel32(ix,iy)>>>24;
+		const a01:int = bitmap.getPixel32(ix,iy+1)>>>24;
+		const a10:int = bitmap.getPixel32(ix+1,iy)>>>24;
+		const a11:int = bitmap.getPixel32(ix+1,iy+1)>>>24;
+		
+		const ret:Number = gx*gy*a00 + fx*gy*a10 + gx*fy*a01 + fx*fy*a11;
+		
+		return 0x80 - ret;
 	}
 }
